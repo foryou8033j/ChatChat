@@ -5,6 +5,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * 서버 고유 데이터를 저장 해 둔다.
+ * @author Jeongsam
+ * @since 2017-04-04
+ * @version 1.0
+ *
+ */
 public class ServerData {
 
 	

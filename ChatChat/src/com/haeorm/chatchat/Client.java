@@ -2,14 +2,13 @@ package com.haeorm.chatchat;
 	
 import com.haeorm.chatchat.login.LoginStage;
 import com.haeorm.chatchat.model.Data;
-import com.haeorm.chatchat.model.RegistyNameData;
 import com.haeorm.chatchat.model.ServerData;
 import com.haeorm.chatchat.root.RootStage;
-import com.haeorm.chatchat.util.Regedit;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -25,6 +24,8 @@ import javafx.stage.Stage;
  */
 public class Client extends Application {
 	
+	private double version = 0.1;
+	
 	private Data data = null;
 	private ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
 	
@@ -33,7 +34,7 @@ public class Client extends Application {
 	private LoginStage loginStage = null;
 	private RootStage rootStage = null;
 	
-	private boolean acceptShowRootLayout = false;
+	private boolean acceptShowRootLayout = true;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -88,9 +89,22 @@ public class Client extends Application {
 	 */
 	public void tryConnectToServer(){
 		
+		Task task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
 		
+		task.setOnSucceeded(event -> {
 		
-		initRootStage();
+			
+			initRootStage();
+		});
+		
+		Thread thread = new Thread(task);
+		thread.start();
 	}
 	
 	/**
@@ -99,6 +113,14 @@ public class Client extends Application {
 	 */
 	public ObservableList<ServerData> getServerDatas(){
 		return serverDatas;
+	}
+	
+	/**
+	 * 버전 값을 반환한다.
+	 * @return Version
+	 */
+	public double getVersion(){
+		return version;
 	}
 	
 	public static void main(String[] args) {

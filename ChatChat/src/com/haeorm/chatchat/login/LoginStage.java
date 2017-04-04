@@ -13,6 +13,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ * 로그인 Stage를 관리한다.
+ * @author Jeongsam
+ * @since 2017-04-04
+ * @version 1.0
+ *
+ */
 public class LoginStage extends Stage{
 
 	public LoginStage(Client client) {

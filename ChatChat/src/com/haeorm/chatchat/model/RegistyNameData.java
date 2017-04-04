@@ -1,5 +1,10 @@
 package com.haeorm.chatchat.model;
 
+/**
+ * 레지스트에서 값을 가져올 변수들의 이름을 지정 해 둔다.
+ * @author Jeongsam
+ *
+ */
 public class RegistyNameData {
 
 	public static String LOGIN_VIEW_X = "LoginViewX";

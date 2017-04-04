@@ -29,13 +29,15 @@ import javafx.util.Callback;
  * 접속 전 설정 화면 레이아웃을 조정한다.
  * @author Jeongsam
  * @since 2017-04-04
- * @version 0.1
+ * @version 1.0
  *
  */
 public class LoginLayoutController implements Initializable{
 	
 	ObservableList<String> blockNameList = FXCollections.observableArrayList(
 			"root", "admin");
+	
+	@FXML Text version;
 	
 	@FXML ImageView logo;
 	@FXML ComboBox<ServerData> serverComboBox;
@@ -104,8 +106,9 @@ public class LoginLayoutController implements Initializable{
 					nameNoticeText.setText("사용 할 수 없는 이름입니다.");
 					connectButton.setDisable(true);
 				}
-				else if (newValue.equals("") || passwordInputBox.getText().equals(""))
+				else if (newValue.equals("") || passwordInputBox.getText().equals("")){
 					connectButton.setDisable(true);
+				}
 				else{
 					nameNoticeText.setText("");
 					connectButton.setDisable(false);
@@ -124,8 +127,9 @@ public class LoginLayoutController implements Initializable{
 					passwordNoticeText.setText("한글이 입력되고 있습니다.");
 					connectButton.setDisable(true);
 				}
-				else if (newValue.equals("") || nameInputBox.getText().equals(""))
+				else if (newValue.equals("") || nameInputBox.getText().equals("")){
 					connectButton.setDisable(true);
+				}
 				else{
 					passwordNoticeText.setText("");
 					connectButton.setDisable(false);
@@ -152,11 +156,18 @@ public class LoginLayoutController implements Initializable{
 	 */
 	public void setClient(Client client){
 		this.client = client;
+		version.setText("v" + String.valueOf(client.getVersion()));
 		
 		logo.setImage(client.icon);
 		
 		serverComboBox.setItems(client.getServerDatas());
 		serverComboBox.getSelectionModel().select(0);
+		
+		ImageView image = new ImageView("join.png");
+		image.setFitWidth(30);
+		image.setFitHeight(30);
+		
+		connectButton.setGraphic(image);
 		
 	}
 	

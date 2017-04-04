@@ -10,7 +10,7 @@ import com.haeorm.chatchat.util.logview.LogView;
 /**
  * 클라이언트의 기본 데이터를 구성하는 클래스
  * @author Jeongsam
- * @version 0.1
+ * @version 1.0
  * @since 2017-04-04
  *
  */
