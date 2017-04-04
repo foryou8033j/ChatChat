@@ -12,6 +12,7 @@ import com.haeorm.control.Runner;
 
 public class Receiver extends Thread{
 	
+	public static String Key = "%%";
 	
 	Runner runner;
 	Socket client;
@@ -39,7 +40,6 @@ public class Receiver extends Thread{
 	public void run() {
 		super.run();
 		
-		String name = "";
 		String message = "";
 		
 		try
@@ -51,14 +51,14 @@ public class Receiver extends Thread{
 				while((message = in.readLine() ) != null)
 				{
 					//server.sendMessage(name + " : " + message);
-					runner.log(name + " : "+ message);
-					runner.sendMessage(message);
+					runner.log("수신 : " + message);
+					manager(message);
 				}
 			}
 			
 		}catch (Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}finally
 		{
 			
@@ -78,35 +78,35 @@ public class Receiver extends Thread{
 	
 	public void manager(String message){
 		
-		StringTokenizer token = new StringTokenizer(message, "^%");
+		StringTokenizer token = new StringTokenizer(message, Receiver.Key);
 		
-		String plag = token.nextToken();
+		int plag = Integer.valueOf(token.nextToken());
+		int hashKey = Integer.valueOf(token.nextToken());
 		
 		switch (plag){
 		
-		case "999":
+		case 999:
 			break;
 			
-		case "1":	//패스워드 일치 확인
+		case 100:	//패스워드 일치 확인
 			if(token.nextToken().equals(runner.getServerData().getPassword()))
-				runner.sendMessage("1^%OK");
+				runner.sendMessage("101" + Receiver.Key + "OK");
 			else
-				runner.sendMessage("1^%NO");
+				runner.sendMessage("102" + Receiver.Key + "NO");
 			break;
 			
-		case "2":	//서버 버전 일치 확인
+		case 110:	//서버 버전 일치 확인
 			if(token.nextToken().equals(Server.version))
-				runner.sendMessage("2^%OK");
+				runner.sendMessage("111" + Receiver.Key + "OK");
 			else
-				runner.sendMessage("2^%NO");
+				runner.sendMessage("112" + Receiver.Key + "NO");
 			break;
 			
-		case "3":	//닉네임 중복 검사
+		case 120:	//닉네임 중복 검사
 			runner.sendMessage("3^%OK");
 			break;
 		
 		}
-		
 		
 		
 	}

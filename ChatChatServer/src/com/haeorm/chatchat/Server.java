@@ -10,6 +10,8 @@ public class Server {
 
 	public static double version = 1.0;
 	
+	
+	
 	ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
 	
 	

@@ -23,7 +23,7 @@ public class Data {
 	private int hashKey;
 	private String name = "";
 	
-	public static String Key = "^%";
+	public static String Key = "%%";
 	
 	public boolean nameOverLabPass = false;
 	public boolean versionCheckPass = false;

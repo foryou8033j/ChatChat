@@ -92,7 +92,7 @@ public class Runner extends Thread{
 	{
 		for(BufferedWriter sender:clients){
 			try {
-				log(message);
+				log("송신 : " + message);
 				sender.write(message);
 				sender.newLine();
 				sender.flush();

@@ -4,8 +4,6 @@ import java.net.Socket;
 
 import com.haeorm.chatchat.loading.LoadLayout;
 import com.haeorm.chatchat.login.LoginStage;
-import com.haeorm.chatchat.login.NameInputDialog;
-import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.ServerData;
 import com.haeorm.chatchat.root.RootStage;
@@ -45,7 +43,7 @@ public class Client extends Application {
 	private LoginStage loginStage = null;
 	private RootStage rootStage = null;
 	
-	private boolean acceptShowRootLayout = true;
+	private boolean acceptShowRootLayout = false;
 	
 	private Receiver receiver = null;
 	private Sender sender = null;
@@ -125,23 +123,16 @@ public class Client extends Application {
 					receiver.start();
 					
 					
-					updateProgress(8, 10);
+					updateProgress(7, 10);
 					updateMessage("전송 서버 연결 중...");
 					sender = new Sender(client, connection);
 					
 					
 					manager().sendPasswordCheckPlag();
 					updateProgress(8, 10);
-					updateMessage("패스워드 일치 확인 중");
+					updateMessage("기본 정보 일치 확인 중..");
 					
-					
-					/*new NameInputDialog(client).showAndWait();
-					manager().sendNameCheckPlag();
-					updateProgress(8, 10);
-					updateMessage("닉네임 중복 확인 중");*/
-					
-					
-					
+					updateProgress(9, 10);
 					updateMessage("마무리 하는중...");
 				}catch (Exception e){
 					cancel();
@@ -159,7 +150,7 @@ public class Client extends Application {
 		
 		task.setOnSucceeded(event -> {
 			loadLayout.close();
-			acceptShowRootLayout = true;
+			//acceptShowRootLayout = true;
 			initRootStage();
 		});
 		
