@@ -28,7 +28,7 @@ public class LoginStage extends Stage{
 			setScene(scene);
 			
 		}catch (Exception e){
-			LogView.append("[오류] LoginStage 초기화 도중 오류가 발생하였습니다.");
+			LogView.append("[오류] LoginStage 초기화 도중 오류가 발생하였습니다.", e);
 			System.exit(0);
 		}
 		

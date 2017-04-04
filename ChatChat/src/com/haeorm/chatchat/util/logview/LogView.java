@@ -6,4 +6,12 @@ public class LogView {
 		System.out.println(message);
 	}
 	
+	public static void append(String message, Exception e){
+		System.out.println(message);
+	}
+	
+	public static void append(String message, String exceptionMessage){
+		System.out.println(message);
+	}
+	
 }

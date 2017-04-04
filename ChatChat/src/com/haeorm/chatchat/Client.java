@@ -1,6 +1,7 @@
 package com.haeorm.chatchat;
 	
 import com.haeorm.chatchat.login.LoginStage;
+import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.root.RootStage;
 
 import javafx.application.Application;
@@ -17,10 +18,17 @@ import javafx.stage.Stage;
  */
 public class Client extends Application {
 	
+	private Data data = null;
+	
 	public Image icon = null;
+	
+	private LoginStage loginStage = null;
+	private RootStage rootStage = null;
 	
 	@Override
 	public void start(Stage primaryStage) {
+		
+		data = new Data();
 		
 		loadImages();
 		
@@ -36,14 +44,20 @@ public class Client extends Application {
 	 * LoginStage 를 초기화한다.
 	 */
 	private void initLoginStage(){
-		new LoginStage(this).show();
+		loginStage = new LoginStage(this);
+		loginStage.show();
 	}
 	
 	/**
 	 * RootStage 를 초기화 한다.
 	 */
 	private void initRootStage(){
-		new RootStage(this).show();
+		if(loginStage != null){
+			loginStage.close();
+			loginStage = null;
+		}
+		rootStage = new RootStage(this);
+		rootStage.show();
 	}
 	
 	/**
