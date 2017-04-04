@@ -1,12 +1,14 @@
 package com.haeorm.chatchat;
 	
-import java.awt.Robot;
+import java.net.Socket;
 
 import com.haeorm.chatchat.loading.LoadLayout;
 import com.haeorm.chatchat.login.LoginStage;
 import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.ServerData;
 import com.haeorm.chatchat.root.RootStage;
+import com.haeorm.chatchat.transmit.receiver.Receiver;
+import com.haeorm.chatchat.transmit.sender.Sender;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -27,6 +29,8 @@ import javafx.stage.Stage;
  */
 public class Client extends Application {
 	
+	private Client client = null;
+	
 	private String title = "ChatChat";
 	private double version = 0.1;
 	
@@ -40,12 +44,16 @@ public class Client extends Application {
 	
 	private boolean acceptShowRootLayout = true;
 	
+	private Receiver receiver = null;
+	private Sender sender = null;
+	
 	@Override
 	public void start(Stage primaryStage) {
+		this.client = this;
 		
 		data = new Data();
-		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.90", 10430),
-				new ServerData("테스트 채널", "10.160.1.90", 10440));
+		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430),
+				new ServerData("테스트 채널", "10.160.1.49", 10440));
 		
 		loadImages();
 		
@@ -99,11 +107,20 @@ public class Client extends Application {
 			@Override
 			protected Void call() throws Exception {
 
+				
+				
 
-				
-				
-				
-				
+				try{
+					Socket connection = new Socket("10.160.1.49", 10430);
+					
+					receiver = new Receiver(client, connection);
+					receiver.start();
+					
+					sender = new Sender(connection);
+					
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				
 				return null;
 			}
@@ -146,6 +163,21 @@ public class Client extends Application {
 	 */
 	public String getTitle(){
 		return title;
+	}
+	
+	/**
+	 * 발신 소켓을 반환한다.
+	 * @return
+	 */
+	public Sender getSender(){
+		return sender;
+	}
+	
+	/**
+	 * 수신 소켓을 반환한다.
+	 */
+	public Receiver getReceiver(){
+		return receiver;
 	}
 	
 	public static void main(String[] args) {

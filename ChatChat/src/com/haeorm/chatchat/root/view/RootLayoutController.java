@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -43,7 +44,8 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML
 	private void handleSendMessage(){
-		
+		client.getSender().sendMessage(chatInputBox.getText());
+		chatInputBox.setText("");
 	}
 	
 	@FXML
@@ -62,7 +64,12 @@ public class RootLayoutController implements Initializable{
 	public void setClient(Client client){
 		this.client = client;
 		
-		
+		chatInputBox.setOnKeyPressed(event -> {
+			if(event.getCode().equals(KeyCode.ENTER))
+				handleSendMessage();
+			else if(event.getCode().equals(KeyCode.ESCAPE))
+				chatInputBox.setText("");
+		});
 		
 	}
 	
