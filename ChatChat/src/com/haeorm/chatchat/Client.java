@@ -44,8 +44,8 @@ public class Client extends Application {
 	public void start(Stage primaryStage) {
 		
 		data = new Data();
-		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.90", 8880),
-				new ServerData("테스트 채널", "10.160.1.90", 8890));
+		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.90", 10430),
+				new ServerData("테스트 채널", "10.160.1.90", 10440));
 		
 		loadImages();
 		
