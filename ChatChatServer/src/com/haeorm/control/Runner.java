@@ -2,6 +2,7 @@ package com.haeorm.control;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
@@ -13,18 +14,23 @@ import com.haeorm.chatchat.model.ServerData;
 import com.haeorm.chatchat.receiver.Receiver;
 import com.haeorm.util.LogView;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class Runner extends Thread{
 
 	ServerData serverData;
 	
 	ServerSocket server;
 	
-	public Map<String, BufferedWriter> clients;
+	public ObservableList<BufferedWriter> clients;
+	public ObservableList<String> names;
 	
 	public Runner(ServerData serverData) {
 		this.serverData = serverData;
 		
-		clients = Collections.synchronizedMap(new HashMap<String, BufferedWriter>());
+		clients = FXCollections.observableArrayList();
+		names = FXCollections.observableArrayList();
 		
 		try {
 			server = new ServerSocket(serverData.getPort());
@@ -52,6 +58,10 @@ public class Runner extends Thread{
 				log("클라이언트 접속 대기중");
 				//클라이언트 접속 대기
 				Socket client = server.accept();
+				
+				BufferedWriter bout = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), "UTF-8"));
+				clients.add(bout);
+				
 				log(client.getInetAddress() + ":" + client.getPort() + " 접속");
 				
 				//서버에서 클라이언트로 메세지를 전송할 Thread 생성
@@ -80,48 +90,23 @@ public class Runner extends Thread{
 	
 	public void sendMessage(String message)
 	{
-		//접속한 유저의 대화명 리스트 추출
-		Iterator<String> iterator = clients.keySet().iterator();
-		
-		//TODO 메세지 전송 안되는 문제 있음.
-		while(iterator.hasNext())
-		{
-			String name = iterator.next();
-			try
-			{
-				
-				BufferedWriter out = clients.get(name);
-				out.write(message + "\n");
-				out.flush();
+		for(BufferedWriter sender:clients){
+			try {
+				log(message);
+				sender.write(message);
+				sender.newLine();
+				sender.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			catch (Exception e)
-			{
-				//메세지를 송신하였으나 소켓이 닫혀있다 -> 클라이언트 연결 끊어짐으로 간주
-				clients.remove(name);
-				
-				//finally 절 실행은 클라이언트가 quit한 것을 의미
-				log(name + " 퇴장");
-				
-				String sendMessage = "000";
-				
-				//사용자 이름 iterator 를 분리한다.
-				Iterator<String> iterators = clients.keySet().iterator();
-				
-				while(iterators.hasNext())
-				{
-					sendMessage = sendMessage.concat("|");
-					sendMessage = sendMessage.concat(iterators.next());
-				}
-				
-				//개정된 사용자 정보를 서버에서 송신한다.
-				sendMessage(sendMessage);
-				
-				//사용자 퇴장 메세지를 출력한다.
-				//sendMessage(MsgManager.make("101", getServerApp().getData().getHashKey(), name, name));
-				log("메세지 전송 중 오류 발생 : " + e.getMessage());
-			}
+			
 		}
 		
+	}
+	
+	public ServerData getServerData(){
+		return serverData;
 	}
 	
 	

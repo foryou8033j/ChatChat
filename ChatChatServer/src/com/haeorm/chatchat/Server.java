@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 
 public class Server {
 
+	public static double version = 1.0;
 	
 	ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
 	
@@ -16,8 +17,8 @@ public class Server {
 		
 		LogView.append("### 채팅 서버 동작 시작 ###");
 		
-		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430),
-				new ServerData("테스트 채널", "10.160.1.49", 10440));
+		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430 ,"cert"),
+				new ServerData("테스트 채널", "10.160.1.49", 10440, "test"));
 		
 		for(ServerData server:serverDatas)
 			server.run();

@@ -20,15 +20,17 @@ public class ServerData {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty ip = new SimpleStringProperty();
 	private IntegerProperty port = new SimpleIntegerProperty();
+	private StringProperty password = new SimpleStringProperty();
 	
 	public ServerData() {
-		this(null, null, 0);
+		this(null, null, 0, null);
 	}
 	
-	public ServerData(String name, String ip, int port){
+	public ServerData(String name, String ip, int port, String password){
 		this.name.set(name);
 		this.ip.set(ip);
 		this.port.set(port);
+		this.password.set(password);
 	}
 	
 	public void setName(String name){
@@ -53,6 +55,14 @@ public class ServerData {
 	
 	public int getPort(){
 		return port.get();
+	}
+	
+	public void setPassword(String password){
+		this.password.set(password);
+	}
+	
+	public String getPassword(){
+		return password.get();
 	}
 	
 	/**
