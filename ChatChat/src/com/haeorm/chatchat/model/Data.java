@@ -21,6 +21,13 @@ public class Data {
 	private String localIP = "";
 	
 	private int hashKey;
+	private String name = "";
+	
+	public static String Key = "^%";
+	
+	public boolean nameOverLabPass = false;
+	public boolean versionCheckPass = false;
+	public boolean serverPasswordPass = false;
 	
 	public Data() {
 		try {
@@ -70,5 +77,17 @@ public class Data {
 	 */
 	public String getLocalIP(){
 		return localIP;
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public int getHashKey(){
+		return hashKey;
 	}
 }

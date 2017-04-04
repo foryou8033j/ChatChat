@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.haeorm.chatchat.Client;
+import com.haeorm.chatchat.transmit.sender.MessageManager;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -44,8 +45,9 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML
 	private void handleSendMessage(){
-		client.getSender().sendMessage(chatInputBox.getText());
+		client.manager().sendNomalText(chatInputBox.getText());
 		chatInputBox.setText("");
+		
 	}
 	
 	@FXML

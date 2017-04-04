@@ -22,6 +22,10 @@ public class LoadLayoutController {
 		text.setText(title);
 	}
 	
+	public Text getText(){
+		return text;
+	}
+	
 	public ProgressIndicator getProgress()
 	{
 		return progress;

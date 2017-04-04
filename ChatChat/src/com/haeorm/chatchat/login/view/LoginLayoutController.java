@@ -171,4 +171,12 @@ public class LoginLayoutController implements Initializable{
 		
 	}
 	
+	public int getSelectedIndex(){
+		return serverComboBox.getSelectionModel().getSelectedIndex();
+	}
+	
+	public String getPassword(){
+		return passwordInputBox.getText();
+	}
+	
 }

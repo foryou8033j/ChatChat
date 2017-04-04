@@ -4,10 +4,13 @@ import java.net.Socket;
 
 import com.haeorm.chatchat.loading.LoadLayout;
 import com.haeorm.chatchat.login.LoginStage;
+import com.haeorm.chatchat.login.NameInputDialog;
+import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.ServerData;
 import com.haeorm.chatchat.root.RootStage;
 import com.haeorm.chatchat.transmit.receiver.Receiver;
+import com.haeorm.chatchat.transmit.sender.MessageManager;
 import com.haeorm.chatchat.transmit.sender.Sender;
 
 import javafx.application.Application;
@@ -106,19 +109,43 @@ public class Client extends Application {
 		Task task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-
-				
 				
 
 				try{
-					Socket connection = new Socket("10.160.1.49", 10430);
 					
+					int index = loginStage.getController().getSelectedIndex();
+					
+					updateProgress(3, 10);
+					updateMessage(serverDatas.get(index).getName() + " 에 접속 중...");
+					Socket connection = new Socket(serverDatas.get(index).getIP(), serverDatas.get(index).getPort());
+					
+					updateProgress(6, 10);
+					updateMessage("수신 서버 연결 중...");
 					receiver = new Receiver(client, connection);
 					receiver.start();
 					
-					sender = new Sender(connection);
 					
+					updateProgress(8, 10);
+					updateMessage("전송 서버 연결 중...");
+					sender = new Sender(client, connection);
+					
+					
+					manager().sendPasswordCheckPlag();
+					updateProgress(8, 10);
+					updateMessage("패스워드 일치 확인 중");
+					
+					
+					/*new NameInputDialog(client).showAndWait();
+					manager().sendNameCheckPlag();
+					updateProgress(8, 10);
+					updateMessage("닉네임 중복 확인 중");*/
+					
+					
+					
+					updateMessage("마무리 하는중...");
 				}catch (Exception e){
+					cancel();
+					acceptShowRootLayout = false;
 					e.printStackTrace();
 				}
 				
@@ -126,12 +153,25 @@ public class Client extends Application {
 			}
 		};
 		
+		loadLayout.initOwner(loginStage);
 		loadLayout.activateProgress(task);
+		loadLayout.activateText(task);
 		
 		task.setOnSucceeded(event -> {
-		
 			loadLayout.close();
+			acceptShowRootLayout = true;
 			initRootStage();
+		});
+		
+		task.setOnCancelled(event -> {
+			loadLayout.close();
+			acceptShowRootLayout = false;
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.initOwner(loginStage);
+			alert.setTitle("접속 불가");
+			alert.setHeaderText("서버 비활성화");
+			alert.setContentText("서버가 동작중이지 않거나, 문제가 발생하였습니다.");
+			alert.showAndWait();
 		});
 		
 		
@@ -139,6 +179,14 @@ public class Client extends Application {
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 		thread.start();
+	}
+	
+	/**
+	 * 클라이언트 정보 데이터를 반환한다.
+	 * @return
+	 */
+	public Data getData(){
+		return data;
 	}
 	
 	/**
@@ -178,6 +226,14 @@ public class Client extends Application {
 	 */
 	public Receiver getReceiver(){
 		return receiver;
+	}
+	
+	public LoginStage getLoginStage(){
+		return loginStage;
+	}
+	
+	public MessageManager manager(){
+		return sender.getManager();
 	}
 	
 	public static void main(String[] args) {

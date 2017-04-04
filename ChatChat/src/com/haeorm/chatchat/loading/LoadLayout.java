@@ -64,4 +64,8 @@ public class LoadLayout extends Stage {
 		
 	}
 	
+	public void activateText(final Task<?> task){
+		controller.getText().textProperty().bind(task.messageProperty());
+	}
+	
 }

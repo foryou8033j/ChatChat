@@ -22,6 +22,8 @@ import javafx.stage.Stage;
  */
 public class LoginStage extends Stage{
 
+	private LoginLayoutController controller;
+	
 	public LoginStage(Client client) {
 		
 		super();
@@ -38,7 +40,7 @@ public class LoginStage extends Stage{
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("./view/LoginLayout.fxml"));
 			AnchorPane pane = (AnchorPane) loader.load();
 			
-			LoginLayoutController controller = loader.getController();
+			controller = loader.getController();
 			controller.setClient(client);
 			
 			Scene scene = new Scene(pane);
@@ -117,6 +119,10 @@ public class LoginStage extends Stage{
 		LogView.append("[알림] LoginStage Shutdown Call 이 실행되었습니다. (" + getX() + ", " + getY() + ")");
 		Regedit.setRegistry(RegistyNameData.LOGIN_VIEW_X, getX());
 		Regedit.setRegistry(RegistyNameData.LOGIN_VIEW_Y, getY());
+	}
+	
+	public LoginLayoutController getController(){
+		return controller;
 	}
 	
 }
