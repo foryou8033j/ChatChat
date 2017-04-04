@@ -1,5 +1,8 @@
 package com.haeorm.chatchat;
 	
+import java.awt.Robot;
+
+import com.haeorm.chatchat.loading.LoadLayout;
 import com.haeorm.chatchat.login.LoginStage;
 import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.ServerData;
@@ -24,6 +27,7 @@ import javafx.stage.Stage;
  */
 public class Client extends Application {
 	
+	private String title = "ChatChat";
 	private double version = 0.1;
 	
 	private Data data = null;
@@ -89,21 +93,34 @@ public class Client extends Application {
 	 */
 	public void tryConnectToServer(){
 		
+		LoadLayout loadLayout = new LoadLayout("서버에 접속 중 입니다.", loginStage);
+		
 		Task task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				// TODO Auto-generated method stub
+
+
+				
+				
+				
+				
+				
 				return null;
 			}
 		};
 		
+		loadLayout.activateProgress(task);
+		
 		task.setOnSucceeded(event -> {
 		
-			
+			loadLayout.close();
 			initRootStage();
 		});
 		
+		
+		
 		Thread thread = new Thread(task);
+		thread.setDaemon(true);
 		thread.start();
 	}
 	
@@ -121,6 +138,14 @@ public class Client extends Application {
 	 */
 	public double getVersion(){
 		return version;
+	}
+	
+	/**
+	 * 타이틀 문자열을 반환한다.
+	 * @return
+	 */
+	public String getTitle(){
+		return title;
 	}
 	
 	public static void main(String[] args) {

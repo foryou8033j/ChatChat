@@ -41,6 +41,21 @@ public class RootLayoutController implements Initializable{
 		
 	}
 	
+	@FXML
+	private void handleSendMessage(){
+		
+	}
+	
+	@FXML
+	private void handleClearChatList(){
+		
+	}
+	
+	@FXML
+	private void handleMenuButton(){
+		
+	}
+	
 	/**
 	 * 클라이언트와 연동한다.
 	 */

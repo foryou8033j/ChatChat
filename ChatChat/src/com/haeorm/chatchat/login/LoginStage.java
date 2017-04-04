@@ -26,7 +26,7 @@ public class LoginStage extends Stage{
 		
 		super();
 		
-		setTitle("ChatChat");
+		setTitle(client.getTitle());
 		setResizable(false);
 		getIcons().add(client.icon);
 		
@@ -35,7 +35,7 @@ public class LoginStage extends Stage{
 		});
 		
 		try{
-			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("./view/LoginLayoutController.fxml"));
+			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("./view/LoginLayout.fxml"));
 			AnchorPane pane = (AnchorPane) loader.load();
 			
 			LoginLayoutController controller = loader.getController();
