@@ -39,7 +39,8 @@ public class Client extends Application {
 	public void start(Stage primaryStage) {
 		
 		data = new Data();
-		serverDatas.add(new ServerData("테스트 서버", "10.160.1.90", 8888));
+		serverDatas.addAll(new ServerData("메인 서버", "10.160.1.90", 8880),
+				new ServerData("테스트 서버", "10.160.1.90", 8890));
 		
 		loadImages();
 		
