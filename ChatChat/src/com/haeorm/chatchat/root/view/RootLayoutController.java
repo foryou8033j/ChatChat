@@ -1,7 +1,11 @@
 package com.haeorm.chatchat.root.view;
 
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
@@ -37,7 +41,7 @@ public class RootLayoutController implements Initializable{
 	@FXML Button sendMessageButton;
 	@FXML Button clearChatListButton;
 	
-	@FXML Button menuButton;
+	private @FXML Button menuButton;
 
 	private Client client;
 	
@@ -64,7 +68,7 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML
 	private void handleMenuButton(){
-		
+		showMenuPane();
 	}
 	
 	/**
@@ -102,9 +106,84 @@ public class RootLayoutController implements Initializable{
 		
 	}
 	
+	
+	/**
+	 * 메뉴 버튼을 반환한다.
+	 * @return
+	 */
+	public Button getMenuButton(){
+		return menuButton;
+	}
+	
 	//대화 리스트를 반환한다.
 	public ObservableList<BorderPane> getChatList(){
 		return chatList;
+	}
+	
+	public void showMenuPane(){
+		client.getManager().sendRequestUserListFromServer();
+		client.getRootStage().showMenuBar = true;
+		
+		
+		double originalSize = client.getRootStage().getWidth();
+		double maxSize = client.getRootStage().getWidth() + 400.0;
+		
+		//double maxPaneSize = client.getRootStage().loadMenuPane().getWidth();
+		
+		Timer animTimer = new Timer();
+        animTimer.scheduleAtFixedRate(new TimerTask() {
+            double i = originalSize;
+            double pane = 0.0;
+
+            @Override
+            public void run() {
+            	if (i <= maxSize) {
+                    client.getRootStage().setWidth(i);
+                    client.getRootStage().loadMenuPane().setPrefWidth(pane);
+                } else {
+                    this.cancel();
+                }
+                i++;
+                pane++;
+            }
+
+        }, 0, 2);
+		
+        rootPane.setRight(client.getRootStage().loadMenuPane());
+		
+		
+	}
+	public void closeMenuPane(){
+		client.getRootStage().showMenuBar = false;
+
+		double originalSize = client.getRootStage().getWidth();
+		double minSize = client.getRootStage().getWidth() - 420.0;
+		
+		Timer animTimer = new Timer();
+        animTimer.scheduleAtFixedRate(new TimerTask() {
+            double i = originalSize;
+            double pane = 0.0;
+
+            @Override
+            public void run() {
+            	if (i >= minSize) {
+                    client.getRootStage().setWidth(i);
+                    client.getRootStage().loadMenuPane().setPrefWidth(pane);
+                } else {
+                	Platform.runLater(() -> {
+                		rootPane.setRight(menuButton);
+                	});
+                	
+                    this.cancel();
+                }
+                i--;
+                pane--;
+            }
+
+        }, 0, 1);
+		
+        
+		
 	}
 	
 	

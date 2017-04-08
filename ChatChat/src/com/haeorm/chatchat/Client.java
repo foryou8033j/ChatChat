@@ -58,8 +58,9 @@ public class Client extends Application {
 		this.client = this;
 		
 		data = new Data();
-		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430),
-				new ServerData("테스트 채널", "10.160.1.49", 10440));
+		
+		serverDatas.addAll(new ServerData("메인 채널", data.getLocalIP(), 8080),
+				new ServerData("테스트 채널", data.getLocalIP(), 8888));
 		
 		loadImages();
 		
@@ -171,10 +172,10 @@ public class Client extends Application {
 							
 							if(getData().nameOverLabPass){
 								LogView.append("이름 중복 없음 확인");
+								getData().setName(loginStage.getController().getName());
 								
 								LogView.append("서버 접속 최종 승인");
 								updateMessage("서버 최종 접속 중 ...");
-								getManager().sendInitChatRoomPlag();
 								showprogressIndicate(80, 101, 10);
 								acceptShowRootLayout = true;
 								this.succeeded();
@@ -228,10 +229,11 @@ public class Client extends Application {
 		loadLayout.activateText(task);
 		
 		task.setOnSucceeded(event -> {
-			getData().setName(loginStage.getController().getName());
+			
 			loadLayout.close();
 			initRootStage();
-			getManager().sendRequestUserListFromServer();
+			
+			getManager().sendInitChatRoomPlag();
 		});
 		
 		task.setOnCancelled(event -> {

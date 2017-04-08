@@ -10,7 +10,7 @@
 
 <BorderPane fx:id="rootPane" minHeight="245.0" minWidth="245.0" prefHeight="260.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.root.view.RootLayoutController">
    <center>
-      <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="chatListView" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
       <FlowPane alignment="CENTER" hgap="5.0" BorderPane.alignment="CENTER">

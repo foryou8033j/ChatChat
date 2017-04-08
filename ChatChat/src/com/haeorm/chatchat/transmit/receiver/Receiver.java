@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.Data;
+import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 import com.haeorm.chatchat.util.logview.LogView;
@@ -54,8 +55,8 @@ public class Receiver extends Thread {
 			{
 				while((message = in.readLine() ) != null)
 				{
-					manager(message);
 					LogView.append("[수신] " + message);
+					manager(message);
 				}
 			}
 			
@@ -77,12 +78,21 @@ public class Receiver extends Thread {
 		StringTokenizer token = new StringTokenizer(message, Data.Key);
 		
 		int plag = Integer.valueOf(token.nextToken());
-		String hashKey = token.nextToken();
+		String hashKey = "";
+		if(token.hasMoreTokens())
+			 hashKey = token.nextToken();
 		
 		//현재 클라이언트만 해당되어야 하는 명령
 		if(client.getData().getHashKey() == Double.valueOf(hashKey)){
 			
 			switch (plag) {
+			case 0:
+				client.getManager().sendRequestUserListFromServer();
+				break;
+			
+			case 800:	//사용자 확인 명령 수행
+				refreshUserList(token.nextToken());
+				break;
 			
 			case 101: //패스워드 승인
 				client.getData().serverPasswordPass = true;
@@ -115,7 +125,16 @@ public class Receiver extends Thread {
 			case 122: //닉네임 승인 실패
 				client.getData().nameOverLabPass = false;
 				break;
+			
+			case 501:	//닉네임 변경 승인
+				client.getData().setName(token.nextToken());
 				
+				receiveNoticePopup("닉네임 변경에 성공하였습니다.");
+				break;
+			case 502:	//닉네임 변경 실패
+				receiveNoticePopup("닉네임 변경에 실패하였습니다.");
+				break;
+			
 			case 999:	//일반 메세지
 				receivedNomalText(token.nextToken(), token.nextToken());
 				break;
@@ -130,8 +149,12 @@ public class Receiver extends Thread {
 			
 		}else{	//전체 클라이언트에 해당되는 명령
 			switch(plag){
-			case 0:	//사용자 확인 명령 수행
-				System.out.println(message);
+			case 0:
+				client.getManager().sendRequestUserListFromServer();
+				break;
+			
+			case 800:	//사용자 확인 명령 수행
+				refreshUserList(token.nextToken());
 				break;
 				
 			case 999:	//일반 메세지
@@ -147,26 +170,41 @@ public class Receiver extends Thread {
 			}
 		}
 	}
+	
+	private void refreshUserList(String listCode){
+		client.getRootStage().getMenuLayoutController().getUserList().clear();
+		
+		StringTokenizer token = new StringTokenizer(listCode, "##");
+		
+		while(token.hasMoreTokens()){
+			StringTokenizer userSet = new StringTokenizer(token.nextToken(), "$$");
+			String name = userSet.nextToken();
+			String status = userSet.nextToken();
+			client.getRootStage().getMenuLayoutController().getUserList().add(new UserList(name, status));
+		}
+	}
 
 	//일반메세지 수신
-	public void receivedNomalText(String name, String message){
+	private void receivedNomalText(String name, String message){
 		Platform.runLater(() -> {	
 			client.getRootStage().appendMessage(name, message);
 		});
 	}
 	
 	//대화 공지사항 수신
-	public void receiveNotice(String message){
+	private void receiveNotice(String message){
 		Platform.runLater(() -> {
 			client.getRootStage().getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", message).getChatNode());
+			client.getRootStage().recentlySender = "";
 		});
 		
 	}
 	
 	//알림 공지사항 수신
-	public void receiveNoticePopup(String message){
+	private void receiveNoticePopup(String message){
 		Platform.runLater(() -> {
 			//client.getRootStage().getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", message).getChatNode());
+			client.getRootStage().recentlySender = "";
 		});
 	}
 	

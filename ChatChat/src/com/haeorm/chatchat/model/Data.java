@@ -7,6 +7,9 @@ import java.util.Random;
 
 import com.haeorm.chatchat.util.logview.LogView;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * 클라이언트의 기본 데이터를 구성하는 클래스
  * @author Jeongsam
@@ -21,7 +24,8 @@ public class Data {
 	private String localIP = "";
 	
 	private int hashKey;
-	private String name = "NULL";
+	private StringProperty name = new SimpleStringProperty("NULL");
+	private StringProperty status = new SimpleStringProperty("NULL");
 	
 	public static String Key = "//";
 	
@@ -80,11 +84,27 @@ public class Data {
 	}
 	
 	public void setName(String name){
-		this.name = name;
+		this.name.set(name);
 	}
 	
 	public String getName(){
+		return name.get();
+	}
+	
+	public StringProperty getNameProperty(){
 		return name;
+	}
+	
+	public void setStatus(String status){
+		this.status.set(status);
+	}
+	
+	public String getStatus(){
+		return status.get();
+	}
+	
+	public StringProperty getStatusProperty(){
+		return status;
 	}
 	
 	public int getHashKey(){

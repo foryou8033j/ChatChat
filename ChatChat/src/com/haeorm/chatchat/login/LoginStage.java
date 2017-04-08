@@ -3,6 +3,7 @@ package com.haeorm.chatchat.login;
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.RegistyNameData;
+import com.haeorm.chatchat.util.ExceptionDialog;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.logview.LogView;
 
@@ -10,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -47,6 +49,7 @@ public class LoginStage extends Stage{
 			setScene(scene);
 			
 		}catch (Exception e){
+			new ExceptionDialog(AlertType.ERROR, "오류", "LoginStage 초기화 도중 오류가 발생하였습니다.", "", e).showAndWait();
 			LogView.append("[오류] LoginStage 초기화 도중 오류가 발생하였습니다.", e);
 			System.exit(0);
 		}

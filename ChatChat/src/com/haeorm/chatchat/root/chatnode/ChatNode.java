@@ -39,7 +39,7 @@ public class ChatNode{
 			else
 				controller.setSenderType(SENDER.OTHER);
 			
-			if(client.getRootStage().recentlySender.equals(name))
+			if(!client.getRootStage().recentlySender.equals("") && client.getRootStage().recentlySender.equals(name))
 				controller.isSameSender(true);
 			else
 				controller.isSameSender(false);

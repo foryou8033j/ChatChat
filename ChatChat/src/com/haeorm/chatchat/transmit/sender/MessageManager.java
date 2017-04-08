@@ -48,7 +48,7 @@ public class MessageManager {
 	
 	//채팅방 접속 승인에 성공하고 정보를 보내는 플래그
 	public void sendInitChatRoomPlag(){
-		send("2", client.getLoginStage().getController().getName());
+		send("2", client.getData().getName());
 	}
 	
 	//채팅방 접속 종료 플래그
@@ -61,6 +61,10 @@ public class MessageManager {
 		send("0");
 	}
 	
+	//사용자 이름 변경 신청 플래그
+	public void sendRequestChangeName(String name){
+		send("500", client.getData().getName() + Data.Key + name);
+	}
 	
 	
 	

@@ -1,19 +1,21 @@
 package com.haeorm.chatchat.root;
 
 import com.haeorm.chatchat.Client;
-import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.RegistyNameData;
+import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
+import com.haeorm.chatchat.root.menu.MenuLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.logview.LogView;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -23,6 +25,12 @@ public class RootStage extends Stage{
 	
 	private RootLayoutController controller = null;
 	private Client client;
+	
+	private BorderPane menuPane = null;
+	private MenuLayoutController menuController = null;
+	
+	
+	public boolean showMenuBar = false;
 	
 	public RootStage(Client client) {
 		this.client = client;
@@ -57,9 +65,20 @@ public class RootStage extends Stage{
 		
 		loadDefaultPos();
 		loadDefaultSize();
+		
+		initMenuPane();
+		
 		show();
 		
-		getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", client.getData().getName() + "님 환영합니다.").getChatNode());
+		
+		
+		/*try{
+			recentlySender = "";
+			getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", client.getData().getName() + "님 환영합니다.").getChatNode());
+		}catch (Exception e){
+			//ignore
+		}*/
+		
 		
 	}
 	
@@ -161,8 +180,11 @@ public class RootStage extends Stage{
 		widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, newValue.doubleValue());
-			}
+				if(showMenuBar) 
+					Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, newValue.doubleValue()-400);
+				else
+					Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, newValue.doubleValue());
+			}	
 		});
 		
 		heightProperty().addListener(new ChangeListener<Number>() {
@@ -183,8 +205,13 @@ public class RootStage extends Stage{
 		
 		LogView.append("[알림] RootStage Shutdown Call 이 실행되었습니다. (" + getX() + ", " + getY() + ")");
 		
-		//채팅방 종료 플래그를 전송한다.
-		client.getSender().getManager().sendQuitPlag();
+		try{
+			//채팅방 종료 플래그를 전송한다.
+			client.getSender().getManager().sendQuitPlag();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
 		
 		//채팅 리스트
 		controller.handleClearChatList();
@@ -194,9 +221,48 @@ public class RootStage extends Stage{
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, getWidth());
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_HEIGHT, getHeight());
 		
+		if(showMenuBar)
+			Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, getWidth()-400);
+		
 		client.clearTransmit();
 		client.initLoginStage();
 		
+	}
+	
+	/**
+	 * 메뉴 화면을 초기화 한다.
+	 */
+	private void initMenuPane(){
+		
+		try {
+			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("./menu/MenuLayout.fxml"));
+			menuPane = (BorderPane) loader.load();
+			
+			menuController = loader.getController();
+			menuController.setClient(client);
+			
+			
+			
+		}catch (Exception e){
+			
+		}
+		
+	}
+	
+	/**
+	 * 메뉴 레이아웃을 반환한다.
+	 * @return
+	 */
+	public BorderPane loadMenuPane(){
+		return menuPane;
+	}
+	
+	/**
+	 * 메뉴 레이아웃 컨트롤러를 반환한다.
+	 * @return
+	 */
+	public MenuLayoutController getMenuLayoutController(){
+		return menuController;
 	}
 	
 	/**
@@ -206,6 +272,7 @@ public class RootStage extends Stage{
 	public RootLayoutController getRootLayoutController(){
 		return controller;
 	}
+
 	
 	/**
 	 * 채팅창에 메세지를 출력한다.
