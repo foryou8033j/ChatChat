@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -66,12 +67,8 @@
                               <Font name="Malgun Gothic Bold" size="12.0" />
                            </font>
                         </Text>
-                        <Text fx:id="status" strokeType="OUTSIDE" strokeWidth="0.0" text="Status" GridPane.rowIndex="4">
-                           <font>
-                              <Font name="Malgun Gothic Bold" size="12.0" />
-                           </font>
-                        </Text>
-                        <Button fx:id="changeStatus" mnemonicParsing="false" onAction="#handleChangeStatus" prefWidth="80.0" text="상태변경" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <ToggleButton fx:id="alwaysTop" mnemonicParsing="false" onAction="#handleToogleAlwaysTop" prefWidth="80.0" text="항상 위" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <ComboBox fx:id="status" prefWidth="90.0" promptText="Online" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                </children>
