@@ -29,7 +29,7 @@ import javafx.stage.Stage;
 /**
  * 클라이언트 동작을 위한 중심 클래스
  * @author Jeongsam
- * @version 1.0
+ * @version 0.1
  * @since 2017-04-04
  *
  */
@@ -38,7 +38,7 @@ public class Client extends Application {
 	private Client client = null;
 	
 	private String title = "ChatChat";
-	private double version = 1.0;
+	private double version = 0.1;
 	
 	private Data data = null;
 	private ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
@@ -59,8 +59,8 @@ public class Client extends Application {
 		
 		data = new Data();
 		
-		serverDatas.addAll(new ServerData("메인 채널", "210.104.44.41", 8080),
-				new ServerData("테스트 채널", "210.104.44.41", 8888));
+		serverDatas.addAll(new ServerData("메인 채널", data.getLocalIP(), 8080),
+				new ServerData("테스트 채널", data.getLocalIP(), 8888));
 		
 		loadImages();
 		
@@ -233,7 +233,8 @@ public class Client extends Application {
 			loadLayout.close();
 			initRootStage();
 			
-			getManager().sendInitChatRoomPlag();
+			getManager().sendInitChatRoomPlag();	//서버 최초 입장 메세지를 전송한다, 서버상 상태는 Online 이다.
+			getData().setStatus(getRootStage().getMenuLayoutController().getStatusList().get(0));	//데이터에 기본 상태를 지정한다.
 		});
 		
 		task.setOnCancelled(event -> {

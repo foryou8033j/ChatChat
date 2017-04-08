@@ -233,7 +233,8 @@ public class Client extends Application {
 			loadLayout.close();
 			initRootStage();
 			
-			getManager().sendInitChatRoomPlag();
+			getManager().sendInitChatRoomPlag();	//서버 최초 입장 메세지를 전송한다, 서버상 상태는 Online 이다.
+			getData().setStatus(getRootStage().getMenuLayoutController().getStatusList().get(0));	//데이터에 기본 상태를 지정한다.
 		});
 		
 		task.setOnCancelled(event -> {
