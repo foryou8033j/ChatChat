@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="rootPane" minHeight="245.0" minWidth="245.0" prefHeight="260.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.root.view.RootLayoutController">
+   <center>
+      <ListView fx:id="chatListView" BorderPane.alignment="CENTER" />
+   </center>
+   <bottom>
+      <FlowPane alignment="CENTER" hgap="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="chatInputBox" prefWidth="220.0" promptText="Input your message" />
+            <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#handleSendMessage" text="Send">
+               <font>
+                  <Font name="Malgun Gothic Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button fx:id="clearChatListButton" mnemonicParsing="false" onAction="#handleClearChatList" text="Clear">
+               <font>
+                  <Font name="Malgun Gothic Bold" size="12.0" />
+               </font>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="4.0" top="2.0" />
+         </BorderPane.margin>
+      </FlowPane>
+   </bottom>
+   <right>
+      <Button fx:id="menuButton" mnemonicParsing="false" onAction="#handleMenuButton" prefHeight="200.0" prefWidth="14.0" text="▶" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Malgun Gothic" size="10.0" />
+         </font>
+         <padding>
+            <Insets left="2.0" right="2.0" />
+         </padding>
+      </Button>
+   </right>
+</BorderPane>
