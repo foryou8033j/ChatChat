@@ -51,6 +51,11 @@ public class MessageManager {
 		send("2", client.getData().getName());
 	}
 	
+	//상태 변경 메시지 플래그
+	public void sendChangedStatus(String status){
+		send("520", client.getData().getName() + Data.Key + status);
+	}
+	
 	//채팅방 접속 종료 플래그
 	public void sendQuitPlag(){
 		send("4444", client.getData().getName());

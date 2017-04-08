@@ -22,6 +22,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 /**
  * 채팅 프로그램의 가장 기본이 되는 Scene
@@ -32,6 +36,8 @@ import javafx.scene.layout.BorderPane;
  */
 public class RootLayoutController implements Initializable{
 
+	public enum NOTICE_STYLE{ERROR, INFORMATION};
+	
 	@FXML BorderPane rootPane;
 	
 	ObservableList<BorderPane> chatList = FXCollections.observableArrayList();
@@ -115,21 +121,29 @@ public class RootLayoutController implements Initializable{
 		return menuButton;
 	}
 	
-	//대화 리스트를 반환한다.
+	/**
+	 * 대화 리스트를 반환한다.
+	 * @return
+	 */
 	public ObservableList<BorderPane> getChatList(){
 		return chatList;
 	}
 	
+	/**
+	 * 메뉴화면을 보여준다.
+	 * TODO 화면 확장 딜레이시 프레임 안맞는 현상 있음.
+	 */
 	public void showMenuPane(){
 		client.getManager().sendRequestUserListFromServer();
 		client.getRootStage().showMenuBar = true;
 		
 		
 		double originalSize = client.getRootStage().getWidth();
-		double maxSize = client.getRootStage().getWidth() + 400.0;
+		double maxSize = client.getRootStage().getWidth() + client.getRootStage().loadMenuPane().getPrefWidth();
 		
 		//double maxPaneSize = client.getRootStage().loadMenuPane().getWidth();
 		
+		//메뉴창을 여는 애니메이션
 		Timer animTimer = new Timer();
         animTimer.scheduleAtFixedRate(new TimerTask() {
             double i = originalSize;
@@ -143,26 +157,33 @@ public class RootLayoutController implements Initializable{
                 } else {
                     this.cancel();
                 }
-                i++;
-                pane++;
+                i += 0.7;
+                pane += 0.7;
             }
 
-        }, 0, 2);
+        }, 0, 1);
 		
         rootPane.setRight(client.getRootStage().loadMenuPane());
 		
 		
 	}
+	/**
+	 * 메뉴 화면을 닫는다.
+	 * TODO 화면 닫을 때 클라이언트 메모리가 누수되는 문제 있음.
+	 * @deprecated 클라이언트 복제 문제 있음
+	 * 
+	 */
 	public void closeMenuPane(){
 		client.getRootStage().showMenuBar = false;
 
 		double originalSize = client.getRootStage().getWidth();
-		double minSize = client.getRootStage().getWidth() - 400.0;
+		double minSize = client.getRootStage().getWidth() - client.getRootStage().loadMenuPane().getPrefWidth();
 		
+		//메뉴창을 여는 애니메이션
 		Timer animTimer = new Timer();
         animTimer.scheduleAtFixedRate(new TimerTask() {
             double i = originalSize;
-            double pane = 0.0;
+            double pane = client.getRootStage().loadMenuPane().getWidth();
 
             @Override
             public void run() {
@@ -172,20 +193,59 @@ public class RootLayoutController implements Initializable{
                 } else {
                 	Platform.runLater(() -> {
                 		rootPane.setRight(menuButton);
+                		client.getRootStage().loadMenuPane().setPrefWidth(400);
                 	});
-                	
                     this.cancel();
                 }
-                i--;
-                pane--;
+                i -= 0.7;
+                pane -= 0.7;
             }
 
         }, 0, 1);
-		
-        
-		
 	}
 	
+	public void showNoticePopup(NOTICE_STYLE style, String message, int time){
+		
+		BorderPane pane = new BorderPane();
+		Text text = new Text(message);
+		text.setFont(Font.font("Malgun Gothic", FontWeight.EXTRA_BOLD, 12));
+		
+		pane.setCenter(text);
+		
+		
+		if(NOTICE_STYLE.ERROR.equals(style)){
+			
+			pane.setStyle(""
+					+ "-fx-background-color : rgb(190, 37, 37);"
+			);
+			text.setFill(Color.WHITE);
+			
+		}else if(NOTICE_STYLE.INFORMATION.equals(style)){
+			
+			pane.setStyle(""
+				+ "-fx-background-color : rgb(78, 156, 181);"
+			);
+			text.setFill(Color.BLACK);
+			
+		}else{
+			
+		}
+		
+		Platform.runLater(() -> {
+			
+			rootPane.setTop(pane);
+			
+			try {
+				new Robot().delay(time);
+			} catch (AWTException e) {
+				
+			}
+			
+			rootPane.setTop(null);
+			
+		});
+		
+	}
 	
 	
 	

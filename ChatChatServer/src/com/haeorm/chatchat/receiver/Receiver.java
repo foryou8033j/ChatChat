@@ -10,7 +10,6 @@ import java.util.StringTokenizer;
 import com.haeorm.chatchat.Server;
 import com.haeorm.chatchat.model.UserList;
 import com.haeorm.control.Runner;
-import com.haeorm.util.LogView;
 
 public class Receiver extends Thread{
 	
@@ -175,6 +174,8 @@ public class Receiver extends Thread{
 			break;
 			
 		case 520: //사용자 상태 변경 신청
+			runner.changeStatus(token.nextToken(), token.nextToken());
+			runner.sendMessage("0" + Receiver.Key + hashKey);
 			break;
 			
 		case 4444:	//사용자 채팅방 종료 명령

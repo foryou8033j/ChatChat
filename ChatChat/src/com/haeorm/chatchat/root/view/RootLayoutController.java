@@ -22,6 +22,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 /**
  * 채팅 프로그램의 가장 기본이 되는 Scene
@@ -32,6 +36,8 @@ import javafx.scene.layout.BorderPane;
  */
 public class RootLayoutController implements Initializable{
 
+	public enum NOTICE_STYLE{ERROR, INFORMATION};
+	
 	@FXML BorderPane rootPane;
 	
 	ObservableList<BorderPane> chatList = FXCollections.observableArrayList();
@@ -198,6 +204,61 @@ public class RootLayoutController implements Initializable{
         }, 0, 1);
 	}
 	
+	public void showNoticePopup(NOTICE_STYLE style, String message, int time){
+		
+		Platform.runLater(() -> {
+			rootPane.setTop(null);
+		});
+		
+		BorderPane pane = new BorderPane();
+		Text text = new Text(message);
+		text.setFont(Font.font("Malgun Gothic", FontWeight.EXTRA_BOLD, 12));
+		
+		pane.setCenter(text);
+		
+		
+		if(NOTICE_STYLE.ERROR.equals(style)){
+			
+			pane.setStyle(""
+					+ "-fx-background-color : rgb(190, 37, 37);"
+			);
+			text.setFill(Color.WHITE);
+			
+		}else if(NOTICE_STYLE.INFORMATION.equals(style)){
+			
+			pane.setStyle(""
+				+ "-fx-background-color : rgb(78, 156, 181);"
+			);
+			text.setFill(Color.BLACK);
+			
+		}else{
+			
+		}
+		
+		Platform.runLater(() -> {
+			
+			rootPane.setTop(pane);
+			
+			new Thread(() -> {
+			
+				try {
+					new Robot().delay(time);
+				} catch (AWTException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Platform.runLater(() -> {
+					rootPane.setTop(null);
+				});
+				
+				
+			}).start();
+			
+			
+			
+		});
+		
+	}
 	
 	
 	

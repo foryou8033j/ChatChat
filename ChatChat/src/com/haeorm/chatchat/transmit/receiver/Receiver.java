@@ -10,6 +10,7 @@ import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
+import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.util.logview.LogView;
 
 import javafx.application.Platform;
@@ -128,11 +129,10 @@ public class Receiver extends Thread {
 			
 			case 501:	//닉네임 변경 승인
 				client.getData().setName(token.nextToken());
-				
-				receiveNoticePopup("닉네임 변경에 성공하였습니다.");
+				client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "닉네임 변경에 성공하였습니다.", 4000);
 				break;
 			case 502:	//닉네임 변경 실패
-				receiveNoticePopup("닉네임 변경에 실패하였습니다.");
+				client.getRootStage().showNoticePopup(NOTICE_STYLE.ERROR, "닉네임 변경에 실패하였습니다.", 4000);
 				break;
 			
 			case 999:	//일반 메세지
@@ -203,7 +203,7 @@ public class Receiver extends Thread {
 	//알림 공지사항 수신
 	private void receiveNoticePopup(String message){
 		Platform.runLater(() -> {
-			//client.getRootStage().getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", message).getChatNode());
+			client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, message, 4000);
 			client.getRootStage().recentlySender = "";
 		});
 	}

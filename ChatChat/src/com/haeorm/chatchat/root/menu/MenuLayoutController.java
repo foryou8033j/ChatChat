@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
@@ -22,6 +23,7 @@ import javafx.scene.text.Text;
 public class MenuLayoutController implements Initializable{
 
 
+	private ObservableList<String> statusList = FXCollections.observableArrayList("Online", "Busy", "Away", "Offline");
 	private ObservableList<UserList> userList = FXCollections.observableArrayList();
 	
 	@FXML Button menuButton;
@@ -39,8 +41,8 @@ public class MenuLayoutController implements Initializable{
 	@FXML Text name;
 	@FXML Button changeName;
 	
-	@FXML Text status;
-	@FXML Button changeStatus;
+	@FXML ComboBox<String> status;
+	@FXML ToggleButton alwaysTop;
 	
 	private Client client;
 	
@@ -82,6 +84,11 @@ public class MenuLayoutController implements Initializable{
 	}
 	
 	@FXML
+	private void handleToogleAlwaysTop(){
+		
+	}
+	
+	@FXML
 	private void handleChangeName(){
 		new NameChangeDialog(client).show();
 	}
@@ -102,6 +109,7 @@ public class MenuLayoutController implements Initializable{
 		name.setText(client.getData().getName());
 		
 		userListView.setItems(userList);
+		status.setItems(statusList);
 		
 		client.getData().getNameProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -110,8 +118,36 @@ public class MenuLayoutController implements Initializable{
 			}
 		});
 		
+		client.getData().getStatusProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				status.getSelectionModel().select(newValue);
+			}
+		});
+		
+		status.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				client.getData().setStatus(newValue);
+				client.getSender().getManager().sendChangedStatus(newValue);
+			}
+		});
+		
 	}
 	
+	/**
+	 * 상태 리스트를 반환한다.
+	 * @return
+	 */
+	public ObservableList<String> getStatusList(){
+		return statusList;
+	}
+	
+	
+	/**
+	 * 현재 접속자 목록 리스트를 반환한다.
+	 * @return
+	 */
 	public ObservableList<UserList> getUserList(){
 		return userList;
 	}

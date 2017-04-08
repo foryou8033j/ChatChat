@@ -7,6 +7,7 @@ import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 import com.haeorm.chatchat.root.menu.MenuLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController;
+import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.logview.LogView;
 
@@ -21,6 +22,8 @@ import javafx.stage.Stage;
 
 public class RootStage extends Stage{
 	
+	
+	
 	public String recentlySender = ""; 
 	
 	private RootLayoutController controller = null;
@@ -33,7 +36,10 @@ public class RootStage extends Stage{
 	public boolean showMenuBar = false;
 	
 	public RootStage(Client client) {
+		super();
 		this.client = client;
+		
+		
 		
 		setTitle(client.getTitle());
 		getIcons().add(client.icon);
@@ -70,7 +76,7 @@ public class RootStage extends Stage{
 		
 		show();
 		
-		
+		controller.showNoticePopup(NOTICE_STYLE.ERROR, "testMessage", 2000);
 		
 		/*try{
 			recentlySender = "";
@@ -272,7 +278,8 @@ public class RootStage extends Stage{
 	public RootLayoutController getRootLayoutController(){
 		return controller;
 	}
-
+	
+	
 	
 	/**
 	 * 채팅창에 메세지를 출력한다.
