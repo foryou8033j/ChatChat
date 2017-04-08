@@ -115,21 +115,29 @@ public class RootLayoutController implements Initializable{
 		return menuButton;
 	}
 	
-	//대화 리스트를 반환한다.
+	/**
+	 * 대화 리스트를 반환한다.
+	 * @return
+	 */
 	public ObservableList<BorderPane> getChatList(){
 		return chatList;
 	}
 	
+	/**
+	 * 메뉴화면을 보여준다.
+	 * TODO 화면 확장 딜레이시 프레임 안맞는 현상 있음.
+	 */
 	public void showMenuPane(){
 		client.getManager().sendRequestUserListFromServer();
 		client.getRootStage().showMenuBar = true;
 		
 		
 		double originalSize = client.getRootStage().getWidth();
-		double maxSize = client.getRootStage().getWidth() + 400.0;
+		double maxSize = client.getRootStage().getWidth() + client.getRootStage().loadMenuPane().getPrefWidth();
 		
 		//double maxPaneSize = client.getRootStage().loadMenuPane().getWidth();
 		
+		//메뉴창을 여는 애니메이션
 		Timer animTimer = new Timer();
         animTimer.scheduleAtFixedRate(new TimerTask() {
             double i = originalSize;
@@ -143,26 +151,33 @@ public class RootLayoutController implements Initializable{
                 } else {
                     this.cancel();
                 }
-                i++;
-                pane++;
+                i += 0.7;
+                pane += 0.7;
             }
 
-        }, 0, 2);
+        }, 0, 1);
 		
         rootPane.setRight(client.getRootStage().loadMenuPane());
 		
 		
 	}
+	/**
+	 * 메뉴 화면을 닫는다.
+	 * TODO 화면 닫을 때 클라이언트 메모리가 누수되는 문제 있음.
+	 * @deprecated 클라이언트 복제 문제 있음
+	 * 
+	 */
 	public void closeMenuPane(){
 		client.getRootStage().showMenuBar = false;
 
 		double originalSize = client.getRootStage().getWidth();
-		double minSize = client.getRootStage().getWidth() - 420.0;
+		double minSize = client.getRootStage().getWidth() - client.getRootStage().loadMenuPane().getPrefWidth();
 		
+		//메뉴창을 여는 애니메이션
 		Timer animTimer = new Timer();
         animTimer.scheduleAtFixedRate(new TimerTask() {
             double i = originalSize;
-            double pane = 0.0;
+            double pane = client.getRootStage().loadMenuPane().getWidth();
 
             @Override
             public void run() {
@@ -172,18 +187,15 @@ public class RootLayoutController implements Initializable{
                 } else {
                 	Platform.runLater(() -> {
                 		rootPane.setRight(menuButton);
+                		client.getRootStage().loadMenuPane().setPrefWidth(400);
                 	});
-                	
                     this.cancel();
                 }
-                i--;
-                pane--;
+                i -= 0.7;
+                pane -= 0.7;
             }
 
         }, 0, 1);
-		
-        
-		
 	}
 	
 	
