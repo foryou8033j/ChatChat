@@ -23,14 +23,17 @@ public class Runner extends Thread{
 	
 	ServerSocket server;
 	
-	public ObservableList<BufferedWriter> clients;
-	public ObservableList<String> names;
+	public Map<String, BufferedWriter> clients;	//hashKey와 Client BufferWriter 를 저장한다.
+	public ObservableList<String> userList = FXCollections.observableArrayList();
+	
 	
 	public Runner(ServerData serverData) {
 		this.serverData = serverData;
 		
-		clients = FXCollections.observableArrayList();
-		names = FXCollections.observableArrayList();
+		clients = Collections.synchronizedMap(new HashMap<String, BufferedWriter>());
+		
+		//Map에서 String을 떼어낼때 사용
+		//Iterator<String> iterator = clients.keySet().iterator();
 		
 		try {
 			server = new ServerSocket(serverData.getPort());
@@ -43,6 +46,15 @@ public class Runner extends Thread{
 	
 	public void log(String message){
 		LogView.append("["+serverData.getName()+"] \t" + message);
+	}
+	
+	public void removeUser(String hashKey){
+		try{
+			clients.get(hashKey).close();
+			clients.remove(hashKey);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -58,9 +70,6 @@ public class Runner extends Thread{
 				log("클라이언트 접속 대기중");
 				//클라이언트 접속 대기
 				Socket client = server.accept();
-				
-				BufferedWriter bout = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), "UTF-8"));
-				clients.add(bout);
 				
 				log(client.getInetAddress() + ":" + client.getPort() + " 접속");
 				
@@ -90,8 +99,12 @@ public class Runner extends Thread{
 	
 	public void sendMessage(String message)
 	{
-		for(BufferedWriter sender:clients){
+		Iterator<String> iterator = clients.keySet().iterator();
+		while(iterator.hasNext()){
 			try {
+				String hashKey = iterator.next();
+				BufferedWriter sender = clients.get(hashKey);
+				
 				log("송신 : " + message);
 				sender.write(message);
 				sender.newLine();

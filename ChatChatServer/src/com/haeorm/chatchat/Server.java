@@ -19,7 +19,7 @@ public class Server {
 		
 		LogView.append("### 채팅 서버 동작 시작 ###");
 		
-		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430 ,"cert"),
+		serverDatas.addAll(new ServerData("메인 채널", "10.160.1.49", 10430 ,"test"),
 				new ServerData("테스트 채널", "10.160.1.49", 10440, "test"));
 		
 		for(ServerData server:serverDatas)
