@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 
 public class Server {
 
-	public static double version = 1.0;
+	public static double version = 0.1;
 	
 	
 	

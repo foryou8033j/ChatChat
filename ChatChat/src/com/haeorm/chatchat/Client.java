@@ -38,7 +38,7 @@ public class Client extends Application {
 	private Client client = null;
 	
 	private String title = "ChatChat";
-	private double version = 1.0;
+	private double version = 0.1;
 	
 	private Data data = null;
 	private ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
