@@ -33,11 +33,11 @@ public class LoadLayout extends Stage {
 			setScene(scene);
 
 			initStyle(StageStyle.UNDECORATED);
-			initOwner(stage);
 			initModality(Modality.APPLICATION_MODAL);
+			initOwner(stage);
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 
 	}
