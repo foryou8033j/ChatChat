@@ -9,6 +9,14 @@ import com.haeorm.util.LogView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+
+/**
+ * 서버 동작을 위한 중심 클래스
+ * @author Jeongsam
+ * @version 0.1
+ * @since 2017-04-04
+ *
+ */
 public class Server {
 
 	public static double version = 0.1;
