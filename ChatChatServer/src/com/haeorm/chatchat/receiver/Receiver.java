@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import com.haeorm.chatchat.Server;
+import com.haeorm.chatchat.model.UserList;
 import com.haeorm.control.Runner;
 import com.haeorm.util.LogView;
 
@@ -94,11 +95,13 @@ public class Receiver extends Thread{
 		//현재 사용자 리스트 반환
 		case 0:
 			String nameList = "";
-			for(String name:runner.userList){
-				nameList = nameList.concat(name + Receiver.Key);
+			for(UserList user:runner.userList){
+				
+				String userSet = user.getName() + "$$" + user.getStatus();
+				nameList = nameList.concat(userSet + "##");
 			}
 			
-			runner.sendMessage("0" + Receiver.Key + hashKey + Receiver.Key + nameList);
+			runner.sendMessage("800" + Receiver.Key + hashKey + Receiver.Key + nameList);
 			
 			break;
 		
@@ -141,7 +144,7 @@ public class Receiver extends Thread{
 			
 		case 120:	//닉네임 중복 검사
 			String name = token.nextToken();
-			if(!runner.userList.contains(name))
+			if(!runner.checkOverlabName(name))
 				runner.sendMessage("121" + Receiver.Key + hashKey + Receiver.Key + name + " Name Added User List");
 			else
 				runner.sendMessage("122" + Receiver.Key + hashKey + Receiver.Key + name + " Name is Overlab in Server user List");
@@ -149,17 +152,41 @@ public class Receiver extends Thread{
 		
 		case 2:	//접속자 닉네임 저장
 			String tmpName = token.nextToken();
-			runner.userList.add(tmpName);
+			runner.userList.add(new UserList(tmpName, "Online"));
 			runner.log("[알림] 사용자( " + tmpName +" )채팅방 입장 승인, " + hashKey);
 			runner.sendMessage("1000" + Receiver.Key + hashKey + Receiver.Key + tmpName + "님이 입장하였습니다.");
+			runner.sendMessage("0" + Receiver.Key + hashKey);
 			break;
 		
+		case 500:	//사용자 닉네임 변경 신청
+			String originalName = token.nextToken();
+			String changedName = token.nextToken();
+			runner.log("[알림] 사용자 닉네임 변경 신청, " + originalName + " -> " + changedName);
+			if(!runner.checkOverlabName(changedName)){ //0603
+				
+				runner.changeName(originalName, changedName);
+				runner.sendMessage("1000" + Receiver.Key + hashKey + Receiver.Key + "닉네임 변경 [ " + originalName + " ] → [ " + changedName + " ]" );
+				runner.sendMessage("501" + Receiver.Key + hashKey + Receiver.Key + changedName + Receiver.Key + " User Name Change Request Accepted");
+				runner.sendMessage("0" + Receiver.Key + hashKey);
+			}
+			else
+				runner.sendMessage("502" + Receiver.Key + hashKey + Receiver.Key + " User Name Change Request Repused");
+			
+			break;
+			
+		case 520: //사용자 상태 변경 신청
+			break;
+			
 		case 4444:	//사용자 채팅방 종료 명령
 			String quitName = token.nextToken();
 			runner.removeUser(hashKey);
-			runner.userList.remove(quitName);
+			for(UserList user:runner.userList){
+				if(user.getName().equals(quitName))
+					runner.userList.remove(user);
+			}
 			runner.log("[알림] 사용자( " + quitName +" )채팅방 퇴장, " + hashKey);
 			runner.sendMessage("1000" + Receiver.Key + hashKey + Receiver.Key + quitName + "님이 퇴장하였습니다.");
+			runner.sendMessage("0" + Receiver.Key + hashKey);
 			break;
 			
 		case 999:

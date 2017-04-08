@@ -2,7 +2,6 @@ package com.haeorm.control;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
@@ -11,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.haeorm.chatchat.model.ServerData;
+import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.receiver.Receiver;
 import com.haeorm.util.LogView;
 
@@ -24,7 +24,7 @@ public class Runner extends Thread{
 	ServerSocket server;
 	
 	public Map<String, BufferedWriter> clients;	//hashKey와 Client BufferWriter 를 저장한다.
-	public ObservableList<String> userList = FXCollections.observableArrayList();
+	public ObservableList<UserList> userList = FXCollections.observableArrayList();
 	
 	
 	public Runner(ServerData serverData) {
@@ -48,12 +48,44 @@ public class Runner extends Thread{
 		LogView.append("["+serverData.getName()+"] \t" + message);
 	}
 	
+	/**
+	 * 사용자 삭제
+	 * @param hashKey
+	 */
 	public void removeUser(String hashKey){
 		try{
 			clients.get(hashKey).close();
 			clients.remove(hashKey);
 		}catch (Exception e){
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 닉네임 중복 검사
+	 * @param name
+	 * @return
+	 */
+	public boolean checkOverlabName(String name){
+		for(UserList user:userList){
+			if(user.getName().equals(name))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public void changeName(String name, String changedName){
+		for(UserList user:userList){
+			if(user.getName().equals(name))
+				user.setName(changedName);
+		}
+	}
+	
+	public void changeStatus(String name, String status){
+		for(UserList user:userList){
+			if(user.getName().equals(name))
+				user.setStatus(status);
 		}
 	}
 	
