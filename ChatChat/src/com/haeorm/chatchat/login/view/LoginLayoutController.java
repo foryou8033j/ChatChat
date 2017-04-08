@@ -179,4 +179,8 @@ public class LoginLayoutController implements Initializable{
 		return passwordInputBox.getText();
 	}
 	
+	public String getName(){
+		return nameInputBox.getText();
+	}
+	
 }

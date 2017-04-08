@@ -3,6 +3,8 @@ package com.haeorm.chatchat.root;
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.RegistyNameData;
+import com.haeorm.chatchat.root.chatnode.ChatNode;
+import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.logview.LogView;
@@ -17,7 +19,9 @@ import javafx.stage.Stage;
 
 public class RootStage extends Stage{
 	
+	public String recentlySender = ""; 
 	
+	private RootLayoutController controller = null;
 	private Client client;
 	
 	public RootStage(Client client) {
@@ -29,6 +33,8 @@ public class RootStage extends Stage{
 		setMinWidth(345);
 		setMinHeight(280);
 		
+		setAlwaysOnTop(true);
+		
 		setOnCloseRequest(event -> {
 			doShutdownCall();
 		});
@@ -37,7 +43,7 @@ public class RootStage extends Stage{
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("./view/RootLayout.fxml"));
 			BorderPane pane = (BorderPane) loader.load();
 			
-			RootLayoutController controller = loader.getController();
+			controller = loader.getController();
 			controller.setClient(client);
 			
 			Scene scene = new Scene(pane);
@@ -52,6 +58,8 @@ public class RootStage extends Stage{
 		loadDefaultPos();
 		loadDefaultSize();
 		show();
+		
+		getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", client.getData().getName() + "님 환영합니다.").getChatNode());
 		
 	}
 	
@@ -172,11 +180,39 @@ public class RootStage extends Stage{
 	 * LoginStage 가 종료 될 때 실행되는 Call Method 이다.
 	 */
 	private void doShutdownCall(){
+		
 		LogView.append("[알림] RootStage Shutdown Call 이 실행되었습니다. (" + getX() + ", " + getY() + ")");
+		
+		//채팅방 종료 플래그를 전송한다.
+		client.getSender().getManager().sendQuitPlag();
+		
+		//채팅 리스트
+		controller.handleClearChatList();
+		
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_X, getX());
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_Y, getY());
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, getWidth());
 		Regedit.setRegistry(RegistyNameData.ROOT_VIEW_HEIGHT, getHeight());
+		
+		client.clearTransmit();
+		client.initLoginStage();
+		
+	}
+	
+	/**
+	 * RootLayoutController 를 반환한다.
+	 * @return Controller
+	 */
+	public RootLayoutController getRootLayoutController(){
+		return controller;
+	}
+	
+	/**
+	 * 채팅창에 메세지를 출력한다.
+	 * @param message
+	 */
+	public void appendMessage(String name, String message){
+		controller.appendMessage(name, message);
 	}
 	
 

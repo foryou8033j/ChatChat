@@ -21,9 +21,9 @@ public class Data {
 	private String localIP = "";
 	
 	private int hashKey;
-	private String name = "";
+	private String name = "NULL";
 	
-	public static String Key = "%%";
+	public static String Key = "//";
 	
 	public boolean nameOverLabPass = false;
 	public boolean versionCheckPass = false;

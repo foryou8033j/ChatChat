@@ -4,8 +4,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.haeorm.chatchat.Client;
-import com.haeorm.chatchat.transmit.sender.MessageManager;
+import com.haeorm.chatchat.root.chatnode.ChatNode;
+import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -25,7 +30,9 @@ public class RootLayoutController implements Initializable{
 
 	@FXML BorderPane rootPane;
 	
-	@FXML ListView chatListView;
+	ObservableList<BorderPane> chatList = FXCollections.observableArrayList();
+	
+	@FXML ListView<BorderPane> chatListView;
 	@FXML TextField chatInputBox;
 	@FXML Button sendMessageButton;
 	@FXML Button clearChatListButton;
@@ -45,14 +52,14 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML
 	private void handleSendMessage(){
-		client.manager().sendNomalText(chatInputBox.getText());
+		client.getManager().sendNomalText(chatInputBox.getText());
 		chatInputBox.setText("");
-		
 	}
 	
 	@FXML
-	private void handleClearChatList(){
-		
+	public void handleClearChatList(){
+		chatList.clear();
+		client.getRootStage().recentlySender = "";
 	}
 	
 	@FXML
@@ -72,7 +79,32 @@ public class RootLayoutController implements Initializable{
 			else if(event.getCode().equals(KeyCode.ESCAPE))
 				chatInputBox.setText("");
 		});
+		chatListView.setItems(chatList);
 		
+		chatListView.getItems().addListener(new ListChangeListener<BorderPane>() {
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends BorderPane> c) {
+
+				chatListView.scrollTo(c.getList().size() - 1);
+				
+			}
+		});
+		
+	}
+	
+	public void appendMessage(String name, String message){
+		Platform.runLater(() -> {
+		
+			chatList.add(new ChatNode(client, NODE_STYLE.NOMAL, name, message).getChatNode());
+			
+		});
+		
+		
+	}
+	
+	//대화 리스트를 반환한다.
+	public ObservableList<BorderPane> getChatList(){
+		return chatList;
 	}
 	
 	

@@ -28,6 +28,10 @@ public class Sender {
 	}
 	
 	
+	/**
+	 * 메세지를 서버로 전송한다.
+	 * @param message
+	 */
 	public void sendMessage(String message){
 		try {
 			LogView.append("[전송] " + message);
@@ -35,7 +39,6 @@ public class Sender {
 			bout.newLine();
 			bout.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
