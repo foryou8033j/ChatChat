@@ -30,8 +30,8 @@ public class Server {
 		
 		LogView.append("### 채팅 서버 동작 시작 ###");
 		
-		serverDatas.addAll(new ServerData("메인 채널", Inet4Address.getLocalHost().getHostAddress(), 8080 ,"test"),
-				new ServerData("테스트 채널", Inet4Address.getLocalHost().getHostAddress(), 8888, "test"));
+		serverDatas.addAll(new ServerData("메인 채널", Inet4Address.getLocalHost().getHostAddress(), 8080 ,"test", "admin"),
+				new ServerData("테스트 채널", Inet4Address.getLocalHost().getHostAddress(), 8888, "test", "admin"));
 		
 		for(ServerData server:serverDatas)
 			server.run();

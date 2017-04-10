@@ -2,6 +2,7 @@ package com.haeorm.chatchat.receiver;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -61,6 +62,14 @@ public class Receiver extends Thread{
 		}catch (Exception e)
 		{
 			removeUser(hashKey);
+			
+			try {
+				in.close();
+				client.close();
+			} catch (IOException e1) {
+				
+				//e1.printStackTrace();
+			}
 		}finally
 		{
 			
@@ -178,16 +187,50 @@ public class Receiver extends Thread{
 			runner.sendMessage("0" + Receiver.Key + hashKey);
 			break;
 			
-		case 4444:	//사용자 채팅방 종료 명령
+		///관리자 기능 부분///
+		case 60:	//관리자 권한 획득 시도
+			String adminPassword = token.nextToken();
+			if(adminPassword.equals(runner.getServerData().getAdminPassword()))
+				runner.sendMessage("61" + Receiver.Key + hashKey + Receiver.Key + "Get admin authority request Accepped");
+			else
+				runner.sendMessage("62" + Receiver.Key + hashKey + Receiver.Key + "Get admin authority request Repused");
+			break;
+			
+		case 63:	//특정 유저 추방
+			runner.sendMessage("63" + Receiver.Key + hashKey + Receiver.Key + token.nextToken() + Receiver.Key + token.nextToken());
+			break;
+		case 64:
+			runner.sendMessage("64" + Receiver.Key + hashKey + Receiver.Key + token.nextToken());
+			break;	//전체 유저 추방
+		case 65:	//특정 유저 채팅 삭제
+			runner.sendMessage("65" + Receiver.Key + hashKey + Receiver.Key + token.nextToken());
+			break;
+		case 66:	//전체 유저 채팅 삭제
+			runner.sendMessage("66" + Receiver.Key + hashKey);
+			break;
+		case 67:	//공지사항 전파
+			runner.sendMessage("67" + Receiver.Key + hashKey + Receiver.Key + token.nextToken());
+			break;
+			
+		
+		case 700: //귓속말
+			runner.sendMessage(message);
+			break;
+			
+		case 444:	//사용자 채팅방 종료 명령
 			String quitName = token.nextToken();
 			runner.removeUser(hashKey);
+			
+			//여기서 스레드로 관리하면 동시 관리 익센셥이 발생한다.
 			for(UserList user:runner.userList){
-				if(user.getName().equals(quitName))
+				if(user.getName().equals(quitName)){
 					runner.userList.remove(user);
+					break;
+				}
 			}
-			runner.log("[알림] 사용자( " + quitName +" )채팅방 퇴장, " + hashKey);
 			runner.sendMessage("1000" + Receiver.Key + hashKey + Receiver.Key + quitName + "님이 퇴장하였습니다.");
 			runner.sendMessage("0" + Receiver.Key + hashKey);
+			runner.log("[알림] 사용자( " + quitName +" )채팅방 퇴장, " + hashKey);
 			break;
 			
 		case 999:
