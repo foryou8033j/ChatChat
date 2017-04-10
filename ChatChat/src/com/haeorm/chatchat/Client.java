@@ -29,7 +29,7 @@ import javafx.stage.Stage;
 /**
  * 클라이언트 동작을 위한 중심 클래스
  * @author Jeongsam
- * @version 0.1
+ * @version 0.2
  * @since 2017-04-04
  *
  */
