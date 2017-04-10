@@ -7,6 +7,7 @@ import com.haeorm.chatchat.model.RegistyNameData;
 import com.haeorm.chatchat.root.menu.MenuLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
+import com.haeorm.chatchat.transmit.ConnectionKeeper;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.logview.LogView;
 
@@ -36,6 +37,8 @@ public class RootStage extends Stage{
 	
 	private boolean admin = false;
 	
+	private ConnectionKeeper connectionKeeper = null;
+	
 	public RootStage(Client client) {
 		super();
 		this.client = client;
@@ -45,7 +48,7 @@ public class RootStage extends Stage{
 		setTitle(client.getTitle());
 		getIcons().add(client.icon);
 		
-		setMinWidth(345);
+		setMinWidth(480);
 		setMinHeight(280);
 		
 		setOnCloseRequest(event -> {
@@ -77,12 +80,11 @@ public class RootStage extends Stage{
 		
 		showRandomMessage();
 		
-		/*try{
-			recentlySender = "";
-			getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", client.getData().getName() + "님 환영합니다.").getChatNode());
-		}catch (Exception e){
-			//ignore
-		}*/
+		
+		//RootStage 초기화가 완료되면 서버 지속 연결 스레드를 시작한다.
+		connectionKeeper = new ConnectionKeeper(client);
+		connectionKeeper.start();
+		
 		
 	}
 	
@@ -342,6 +344,13 @@ public class RootStage extends Stage{
 		return controller;
 	}
 	
+	/**
+	 * 연결 유지 스레드를 반환한다.
+	 * @return
+	 */
+	public ConnectionKeeper getConnectionKeeper(){
+		return connectionKeeper;
+	}
 	
 	
 	/**

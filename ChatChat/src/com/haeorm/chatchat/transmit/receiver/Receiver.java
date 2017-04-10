@@ -59,6 +59,7 @@ public class Receiver extends Thread {
 			{
 				while((message = in.readLine() ) != null)
 				{
+					
 					LogView.append("[수신] " + message);
 					manager(message);
 				}
@@ -66,7 +67,7 @@ public class Receiver extends Thread {
 			
 		}catch (Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}finally
 		{
 			//removeUser(name);
@@ -79,6 +80,9 @@ public class Receiver extends Thread {
 	 * @param message
 	 */
 	public void manager(String message){
+		
+		client.down.set(client.down.get()+1);
+		
 		StringTokenizer token = new StringTokenizer(message, Data.Key);
 		
 		int plag = Integer.valueOf(token.nextToken());
@@ -150,6 +154,10 @@ public class Receiver extends Thread {
 				break;
 			case 122: //닉네임 승인 실패
 				client.getData().nameOverLabPass = false;
+				break;
+			
+			case 198:
+				client.getRootStage().getConnectionKeeper().dumpPing.set(client.getRootStage().getConnectionKeeper().dumpPing.get()-1);
 				break;
 			
 			case 501:	//닉네임 변경 승인

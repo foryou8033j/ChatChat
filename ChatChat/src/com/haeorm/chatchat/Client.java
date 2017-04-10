@@ -17,6 +17,8 @@ import com.haeorm.chatchat.util.logview.LogView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -38,7 +40,7 @@ public class Client extends Application {
 	private Client client = null;
 	
 	private String title = "ChatChat";
-	private double version = 0.1;
+	private double version = 0.2;
 	
 	private Data data = null;
 	private ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
@@ -52,6 +54,9 @@ public class Client extends Application {
 	
 	private Receiver receiver = null;
 	private Sender sender = null;
+	
+	public IntegerProperty up = new SimpleIntegerProperty(0);
+	public IntegerProperty down = new SimpleIntegerProperty(-1);
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -245,6 +250,127 @@ public class Client extends Application {
 		
 		task.setOnCancelled(event -> {
 			loadLayout.close();
+			receiver = null;
+			sender = null;
+			acceptShowRootLayout = false;
+		});
+		
+
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	/**
+	 * 서버 연결이 끊겼을 때 재시도 할 때 사용하는 메소드
+	 */
+	public void tryReConnectServer(){
+
+		
+		Task<Void> task = new Task<Void>() {
+			
+			@Override
+			protected Void call() throws Exception {
+				
+				Socket connection = null;
+				
+				try{
+					int index = loginStage.getController().getSelectedIndex();
+					
+					updateMessage(serverDatas.get(index).getName() + " 에 접속 중...");
+					connection = new Socket(serverDatas.get(index).getIP(), serverDatas.get(index).getPort());
+					
+				}catch (Exception e){
+					connection = null;
+					this.cancel();
+				}
+					
+					updateMessage("수신 서버 연결 중...");
+					receiver = new Receiver(client, connection);
+					receiver.start();
+					
+					
+					updateMessage("전송 서버 연결 중...");
+					sender = new Sender(client, connection);
+				
+					
+					//서버 접속과 성공과 동시에 최초 티켓 발송
+					updateMessage("최초 인증 토큰 발송...");
+					getManager().sendFirstTicket();
+					
+					
+					updateMessage("패스 워드 일치 확인...");
+					getManager().sendPasswordCheckPlag();
+					
+					if(getData().serverPasswordPass){
+						LogView.append("패스워드 일치 확인");
+						
+						updateMessage("서버 버전 일치 확인...");
+						getManager().sendPasswordCheckPlag();
+						
+						if(getData().versionCheckPass){
+							LogView.append("서버 버전 일치 확인");
+							
+							updateMessage("이름 중복 확인 ...");
+							getManager().sendNameCheckPlag();
+							
+							if(getData().nameOverLabPass){
+								LogView.append("이름 중복 없음 확인");
+								getData().setName(loginStage.getController().getName());
+								
+								LogView.append("서버 접속 최종 승인");
+								updateMessage("서버 최종 접속 중 ...");
+								acceptShowRootLayout = true;
+								this.succeeded();
+								
+							}else{
+								LogView.append("이름 중복");
+								Platform.runLater(() -> {
+									ExceptionDialog ex = new ExceptionDialog(AlertType.ERROR, "접속 실패", "서버에 중복 된 이름이 존재합니다.");
+									ex.initOwner(loginStage);
+									ex.show();
+								});
+								this.cancel();
+							}
+							
+						}else{
+							LogView.append("서버 버전 불일치");
+							Platform.runLater(() -> {
+								ExceptionDialog ex = new ExceptionDialog(AlertType.ERROR, "접속 실패", "클라이언트의 버전이 올바르지 않습니다.");
+								ex.initOwner(loginStage);
+								ex.show();
+							});
+							this.cancel();
+						}
+
+					}else{
+						LogView.append("패스워드 불일치");
+						Platform.runLater(() -> {
+							ExceptionDialog ex = new ExceptionDialog(AlertType.ERROR, "접속 실패", "서버 패스워드가 일치하지 않습니다.");
+							ex.initOwner(loginStage);
+							ex.show();
+						});
+						this.cancel();
+					}
+					
+
+				
+				return null;
+			}
+			
+			
+		};
+
+		
+		task.setOnSucceeded(event -> {
+
+			//initRootStage();
+			
+			getManager().sendInitChatRoomPlag();	//서버 최초 입장 메세지를 전송한다, 서버상 상태는 Online 이다.
+			getData().setStatus(getRootStage().getMenuLayoutController().getStatusList().get(0));	//데이터에 기본 상태를 지정한다.
+		});
+		
+		task.setOnCancelled(event -> {
 			receiver = null;
 			sender = null;
 			acceptShowRootLayout = false;

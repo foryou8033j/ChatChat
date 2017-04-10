@@ -14,7 +14,9 @@ import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,6 +46,7 @@ import javafx.scene.text.Text;
 public class RootLayoutController implements Initializable{
 
 	public enum NOTICE_STYLE{ERROR, INFORMATION};
+	public enum CONNECTION_STATUS{GOOD, NOMAL, BAD};
 	
 	final static public String DEFAULT_RECEIVER = "All";
 	final static public String NOTICE_RECEIVER = "Notice";
@@ -59,6 +62,9 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML Text receiver;
 	BooleanProperty receiverTypemode = new SimpleBooleanProperty(false);
+	
+	@FXML Text connection;
+	@FXML Text transmeter;
 	
 	private @FXML Button menuButton;
 
@@ -225,6 +231,29 @@ public class RootLayoutController implements Initializable{
 				
 			}
 		});
+		
+		setConnectionStatus(CONNECTION_STATUS.GOOD);
+		
+		client.up.addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if(client.down.get()-1 >= 0)
+					client.down.set(client.down.get()-1);
+				
+				transmeter.setText("↑"+newValue.intValue()+" ↓"+client.down.get());
+			}
+		});
+		
+		client.down.addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if(client.up.get()-1 >= 0)
+					client.up.set(client.up.get()-1);
+				
+				transmeter.setText("↑"+client.up.get()+" ↓"+newValue.intValue());
+			}
+		});
+		
 	}
 	
 	public void appendMessage(String name, String message){
@@ -242,6 +271,21 @@ public class RootLayoutController implements Initializable{
 			chatList.add(new ChatNode(client, NODE_STYLE.WISPPER, name, message).getChatNode());
 		});
 	}
+	
+	/**
+	 * 연결 상태를 설정한다.
+	 * @param status
+	 */
+	public void setConnectionStatus(CONNECTION_STATUS status){
+		if(CONNECTION_STATUS.GOOD.equals(status)){
+			connection.setFill(Color.GREEN);
+		}else if(CONNECTION_STATUS.NOMAL.equals(status)){
+			connection.setFill(Color.YELLOW);
+		}else{
+			connection.setFill(Color.RED);
+		}
+	}
+	
 	
 	
 	/**

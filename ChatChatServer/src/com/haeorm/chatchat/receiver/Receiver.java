@@ -233,6 +233,10 @@ public class Receiver extends Thread{
 			runner.log("[알림] 사용자( " + quitName +" )채팅방 퇴장, " + hashKey);
 			break;
 			
+		case 197:
+			runner.sendMessage("198" + Receiver.Key + hashKey);
+			break;
+			
 		case 999:
 			runner.sendMessage(message);
 			break;

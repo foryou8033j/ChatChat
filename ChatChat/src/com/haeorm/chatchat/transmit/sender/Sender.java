@@ -14,10 +14,12 @@ public class Sender {
 	
 	MessageManager manager = null;
 	
+	Client client = null;
+	
 	public Sender(Client client, Socket socket) {
 		
 		try{
-			
+			this.client = client;
 			manager = new MessageManager(client, this);
 			
 			bout = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
@@ -33,13 +35,19 @@ public class Sender {
 	 * @param message
 	 */
 	public void sendMessage(String message){
+		
+		
 		try {
+			client.up.set(client.up.get()+1);
 			LogView.append("[전송] " + message);
 			bout.write(message);
 			bout.newLine();
 			bout.flush();
+			
+			
+			
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

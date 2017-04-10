@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="rootPane" minHeight="245.0" minWidth="245.0" prefHeight="260.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.root.view.RootLayoutController">
+<BorderPane fx:id="rootPane" minHeight="245.0" minWidth="270.0" prefHeight="260.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.root.view.RootLayoutController">
    <center>
       <ListView fx:id="chatListView" BorderPane.alignment="CENTER" />
    </center>
@@ -35,6 +35,24 @@
                   <Font name="Malgun Gothic Bold" size="12.0" />
                </font>
             </Button>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="연결">
+               <font>
+                  <Font name="Malgun Gothic" size="12.0" />
+               </font>
+               <FlowPane.margin>
+                  <Insets left="5.0" />
+               </FlowPane.margin>
+            </Text>
+            <Text fx:id="connection" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="●">
+               <font>
+                  <Font name="Malgun Gothic" size="12.0" />
+               </font>
+            </Text>
+            <Text fx:id="transmeter" strokeType="OUTSIDE" strokeWidth="0.0" text="↑2 ↓3">
+               <font>
+                  <Font name="Malgun Gothic" size="8.0" />
+               </font>
+            </Text>
          </children>
          <BorderPane.margin>
             <Insets bottom="4.0" top="2.0" />

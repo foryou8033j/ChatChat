@@ -117,7 +117,6 @@ public class Runner extends Thread{
 						log("소켓 미 개방으로 인해 재 연결");
 						server = new ServerSocket(serverData.getPort());
 					} catch (IOException e1) {
-						
 						e1.printStackTrace();
 					}
 				}

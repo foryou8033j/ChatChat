@@ -106,6 +106,9 @@ public class MessageManager {
 		DesktopNotify.showDesktopMessage("서버에 공지사항 전파 요청 완료", "서버에 공지사항 전파 요청을 전송하였습니다\n" + message, DesktopNotify.TIP, 4000);
 	}
 	
+	public void sendConnectionCheckPing(){
+		send("197");
+	}
 	
 	
 }
