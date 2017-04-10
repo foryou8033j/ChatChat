@@ -1,9 +1,17 @@
 package com.haeorm.chatchat.root.chatnode;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.root.chatnode.ChatNodeLayoutController.SENDER;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 
 public class ChatNode{
@@ -32,13 +40,21 @@ public class ChatNode{
 			controller.setDefaultData(name, message);
 			
 			//대화 노드의 발신자를 지정한다.
-			if(name.equals(client.getData().getName()))
+			if(name.equals(client.getData().getName())){
 				controller.setSenderType(SENDER.CLIENT);
+				if(NODE_STYLE.WISPPER.equals(nodeStyle))
+					controller.setWisper();
+			}
+				
 			else if(NODE_STYLE.NOTICE.equals(nodeStyle))
 				controller.setSenderType(SENDER.NOTICE);
-			else
+			else{
 				controller.setSenderType(SENDER.OTHER);
+				if(NODE_STYLE.WISPPER.equals(nodeStyle))
+					controller.setWisper();
+			}
 			
+			//동일한 발신자 일때 발신자 이름을 숨기기 위한 옵션
 			if(!client.getRootStage().recentlySender.equals("") && client.getRootStage().recentlySender.equals(name))
 				controller.isSameSender(true);
 			else
@@ -54,7 +70,32 @@ public class ChatNode{
 	
 	
 	public BorderPane getChatNode(){
+		
+		borderPane.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+			public void handle(ContextMenuEvent event) {
+				initContextMenu().show(borderPane, event.getScreenX(), event.getScreenY());
+			};
+		});
+		
 		return borderPane;
+	}
+	
+	private ContextMenu initContextMenu(){
+		
+		ContextMenu contextMenu = new ContextMenu();
+		
+		MenuItem copy = new MenuItem("복사");
+		
+		copy.setOnAction(event -> {
+			Toolkit toolkit = Toolkit.getDefaultToolkit();
+			Clipboard clipboard = toolkit.getSystemClipboard();
+			StringSelection strSel = new StringSelection("["+name+"] " + message);
+			clipboard.setContents(strSel, null);
+		});
+		
+		contextMenu.getItems().add(copy);
+		
+		return contextMenu;
 	}
 	
 	

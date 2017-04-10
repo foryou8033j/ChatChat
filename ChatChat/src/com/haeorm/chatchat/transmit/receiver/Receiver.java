@@ -10,11 +10,14 @@ import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
+import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.util.logview.LogView;
+import com.haeorm.chatchat.util.notification.DesktopNotify;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 
 /**
@@ -63,7 +66,7 @@ public class Receiver extends Thread {
 			
 		}catch (Exception e)
 		{
-			//ignore
+			e.printStackTrace();
 		}finally
 		{
 			//removeUser(name);
@@ -119,6 +122,28 @@ public class Receiver extends Thread {
 				client.getData().versionCheckPass = false;
 				break;
 			
+			case 61:	//관리자 권한 획득
+				client.getRootStage().setAdmin(true);
+				client.getManager().sendChangedStatus("Admin");
+				client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "관리자 입니다.", 4000);
+				client.getRootStage().getMenuLayoutController().getStatusList().add("Admin");
+				Platform.runLater(() -> {
+					client.getRootStage().getMenuLayoutController().getStatusComboBox().getSelectionModel().select("Admin");
+				});
+				DesktopNotify.showDesktopMessage("관리자 입니다.", "서버가 관리자 권한을 승인하였습니다.", DesktopNotify.SUCCESS, 4000);
+				break;
+			case 62:	//관리자 권한 획득 실패
+				client.getRootStage().setAdmin(false);
+				client.getRootStage().showNoticePopup(NOTICE_STYLE.ERROR, "관리자 권한 획득에 실패하였습니다.", 4000);
+				DesktopNotify.showDesktopMessage("권한 획득 실패", "서버가 관리자 권한 획득을 거부하였습니다.", DesktopNotify.ERROR, 4000);
+				break;
+				
+			case 67:	//공지사항 전파
+				String noticeMessage = token.nextToken();
+				receiveNotice(noticeMessage);
+				receiveNoticePopup(noticeMessage);
+				DesktopNotify.showDesktopMessage("공지사항", noticeMessage, DesktopNotify.INFORMATION, 4000);
+				break;
 			
 			case 121: //닉네임 승인
 				client.getData().nameOverLabPass = true;
@@ -133,6 +158,10 @@ public class Receiver extends Thread {
 				break;
 			case 502:	//닉네임 변경 실패
 				client.getRootStage().showNoticePopup(NOTICE_STYLE.ERROR, "닉네임 변경에 실패하였습니다.", 4000);
+				break;
+				
+			case 700:	//귓속말 수신
+				receiveWisper(token.nextToken(),token.nextToken(), token.nextToken());
 				break;
 			
 			case 999:	//일반 메세지
@@ -152,11 +181,66 @@ public class Receiver extends Thread {
 			case 0:
 				client.getManager().sendRequestUserListFromServer();
 				break;
-			
+				
+			case 63:	//특정 사용자 추방
+				if(client.getData().getName().equals(token.nextToken())){
+					Platform.runLater(() -> {
+
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.initOwner(client.getRootStage());
+						alert.setTitle("관리자에 의해 추방됨");
+						alert.setHeaderText("관리자에 의해 추방되었습니다.");
+						alert.setContentText("사유 : " + token.nextToken());
+						alert.showAndWait();
+						
+						client.getRootStage().doShutdownCall();
+					});
+				}
+				break;
+			case 64:	//전체 사용자 추방
+				Platform.runLater(() -> {
+
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.initOwner(client.getRootStage());
+					alert.setTitle("관리자에 의해 추방됨");
+					alert.setHeaderText("관리자에 의해 추방되었습니다.");
+					alert.setContentText("사유 : " + token.nextToken());
+					alert.showAndWait();
+					
+					client.getRootStage().doShutdownCall();
+				});
+				break;
+			case 65:	//특정 사용자 채팅 삭제
+				if(client.getData().getName().equals(token.nextToken())){
+					Platform.runLater(() -> {
+						client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "관리자 명령으로 채팅내용을 지웠습니다.", 5000);
+						client.getRootStage().getRootLayoutController().handleClearChatList();
+					});
+				}
+					
+				break;
+			case 66:	//전체 사용자 채팅 삭제
+				Platform.runLater(() -> {
+					client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "관리자 명령으로 채팅내용을 지웠습니다.", 5000);
+					client.getRootStage().getRootLayoutController().handleClearChatList();	
+				});
+				break;
+				
+			case 67:	//공지사항 전파
+				String noticeMessage = token.nextToken();
+				receiveNotice(noticeMessage);
+				receiveNoticePopup(noticeMessage);
+				DesktopNotify.showDesktopMessage("공지사항", noticeMessage, DesktopNotify.INFORMATION, 4000);
+				break;
+				
 			case 800:	//사용자 확인 명령 수행
 				refreshUserList(token.nextToken());
 				break;
 				
+			case 700:	//귓속말 수신
+				receiveWisper(token.nextToken(),token.nextToken(), token.nextToken());
+				break;
+			
 			case 999:	//일반 메세지
 				receivedNomalText(token.nextToken(), token.nextToken());
 				break;
@@ -186,9 +270,29 @@ public class Receiver extends Thread {
 
 	//일반메세지 수신
 	private void receivedNomalText(String name, String message){
-		Platform.runLater(() -> {	
+		Platform.runLater(() -> {
 			client.getRootStage().appendMessage(name, message);
 		});
+		
+		if(message.equals("@"+client.getData().getName()) && !isMe(name))
+			DesktopNotify.showDesktopMessage("툭!", name + "님이 당신을 찾습니다!", DesktopNotify.TIP, 6000);
+		else{
+			if(client.getRootStage().isAlarm() && !isMe(name))
+				DesktopNotify.showDesktopMessage(name, message, DesktopNotify.INFORMATION, 2000);
+		}
+	}
+	
+	//귓속말 수신
+	private void receiveWisper(String name, String receiver, String message){
+		if(name.equals(client.getData().getName()) || receiver.equals(client.getData().getName())){
+			Platform.runLater(() -> {
+				client.getRootStage().getRootLayoutController().appendWisperMessage(name, message);
+			});
+		}
+		
+		if(client.getRootStage().isAlarm() && !isMe(name))
+			DesktopNotify.showDesktopMessage(name + "의 귓속말", message, DesktopNotify.INFORMATION, 2500);
+		
 	}
 	
 	//대화 공지사항 수신
@@ -206,6 +310,13 @@ public class Receiver extends Thread {
 			client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, message, 4000);
 			client.getRootStage().recentlySender = "";
 		});
+	}
+	
+	private boolean isMe(String name){
+		if(name.equals(client.getData().getName()))
+			return true;
+		else
+			return false;
 	}
 	
 	

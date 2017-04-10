@@ -1,6 +1,7 @@
 package com.haeorm.chatchat.login.view;
 
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import com.haeorm.chatchat.Client;
@@ -34,8 +35,7 @@ import javafx.util.Callback;
  */
 public class LoginLayoutController implements Initializable{
 	
-	ObservableList<String> blockNameList = FXCollections.observableArrayList(
-			"root", "admin");
+	
 	
 	@FXML Text version;
 	
@@ -74,6 +74,13 @@ public class LoginLayoutController implements Initializable{
 			                setText("");
 			            } else {
 			                setText(t.getName());
+			                
+			                if(client.isDebug()){
+			                	nameInputBox.setText("TestUser" + new Random().nextInt(10000));
+			                	passwordInputBox.setText("test");
+			                }
+			                	
+			                
 			            }
 			        }
 			    });
@@ -102,7 +109,7 @@ public class LoginLayoutController implements Initializable{
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				
-				if(blockNameList.contains(newValue.toLowerCase())){
+				if(client.getData().getBlockNameList().contains(newValue.toLowerCase())){
 					nameNoticeText.setText("사용 할 수 없는 이름입니다.");
 					connectButton.setDisable(true);
 				}
@@ -182,5 +189,7 @@ public class LoginLayoutController implements Initializable{
 	public String getName(){
 		return nameInputBox.getText();
 	}
+	
+	
 	
 }

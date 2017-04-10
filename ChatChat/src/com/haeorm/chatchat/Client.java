@@ -29,12 +29,12 @@ import javafx.stage.Stage;
 /**
  * 클라이언트 동작을 위한 중심 클래스
  * @author Jeongsam
- * @version 0.2
+ * @version 0.1
  * @since 2017-04-04
  *
  */
 public class Client extends Application {
-	
+	private boolean debug = true;
 	private Client client = null;
 	
 	private String title = "ChatChat";
@@ -114,6 +114,12 @@ public class Client extends Application {
 			
 			@Override
 			protected Void call() throws Exception {
+				
+				double centerXPosition = loginStage.getX() + loginStage.getWidth()/2d;
+		        double centerYPosition = loginStage.getY() + loginStage.getHeight()/2d;
+		        
+		        loadLayout.setX(centerXPosition - loadLayout.getWidth()/2d);
+		        loadLayout.setY(centerYPosition - loadLayout.getHeight()/2d);
 				
 				Socket connection = null;
 				
@@ -284,11 +290,22 @@ public class Client extends Application {
 	}
 	
 	/**
+	 * 디버그 모드 유무를 반환한다
+	 * @return
+	 */
+	public boolean isDebug(){
+		return debug;
+	}
+	
+	/**
 	 * 타이틀 문자열을 반환한다.
 	 * @return
 	 */
 	public String getTitle(){
-		return title;
+		if(debug)
+			return title + " [DEBUG]";
+		else
+			return title;
 	}
 	
 	/**

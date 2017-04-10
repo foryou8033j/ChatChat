@@ -9,6 +9,8 @@ import com.haeorm.chatchat.util.logview.LogView;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * 클라이언트의 기본 데이터를 구성하는 클래스
@@ -19,6 +21,10 @@ import javafx.beans.property.StringProperty;
  */
 public class Data {
 
+	ObservableList<String> blockNameList = FXCollections.observableArrayList(
+			"root", "admin", "all", "##", "@", "notice", "wisper", "master", "developer");
+	
+	
 	private String serverIP = "";
 	private int serverPort = 8888;
 	private String localIP = "";
@@ -110,4 +116,8 @@ public class Data {
 	public int getHashKey(){
 		return hashKey;
 	}
+	public ObservableList<String> getBlockNameList(){
+		return blockNameList;
+	}
+	
 }

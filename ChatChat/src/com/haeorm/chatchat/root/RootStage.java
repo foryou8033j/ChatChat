@@ -1,10 +1,9 @@
 package com.haeorm.chatchat.root;
 
+import java.util.Random;
+
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.RegistyNameData;
-import com.haeorm.chatchat.model.UserList;
-import com.haeorm.chatchat.root.chatnode.ChatNode;
-import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 import com.haeorm.chatchat.root.menu.MenuLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
@@ -13,8 +12,6 @@ import com.haeorm.chatchat.util.logview.LogView;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -32,8 +29,12 @@ public class RootStage extends Stage{
 	private BorderPane menuPane = null;
 	private MenuLayoutController menuController = null;
 	
+	private boolean alarm = false;
+	private boolean chatAlwaysDown = true;
 	
 	public boolean showMenuBar = false;
+	
+	private boolean admin = false;
 	
 	public RootStage(Client client) {
 		super();
@@ -46,8 +47,6 @@ public class RootStage extends Stage{
 		
 		setMinWidth(345);
 		setMinHeight(280);
-		
-		setAlwaysOnTop(true);
 		
 		setOnCloseRequest(event -> {
 			doShutdownCall();
@@ -76,7 +75,7 @@ public class RootStage extends Stage{
 		
 		show();
 		
-		controller.showNoticePopup(NOTICE_STYLE.ERROR, "testMessage", 2000);
+		showRandomMessage();
 		
 		/*try{
 			recentlySender = "";
@@ -85,7 +84,21 @@ public class RootStage extends Stage{
 			//ignore
 		}*/
 		
+	}
+	
+	private void showRandomMessage(){
 		
+		String[] notice = {
+			"이름 앞에 '@'를 붙여 누군가를 호출 해 보세요",
+			"##을 입력하고 이름을 입력하면 귓속말을 할 수 있어요",
+			"오른쪽 ▶ 버튼을 누르면 메뉴를 볼 수 있습니다",
+			"##을 입력하고 그냥 전송하면 전체대화모드가 됩니다.",
+			"다른 사용자를 우측클릭하면 다른 옵션이 있어요"
+		};
+		
+		int rand = new Random().nextInt(notice.length);
+		
+		showNoticePopup(NOTICE_STYLE.INFORMATION, notice[rand], 6000);
 	}
 	
 	/**
@@ -207,7 +220,7 @@ public class RootStage extends Stage{
 	/**
 	 * LoginStage 가 종료 될 때 실행되는 Call Method 이다.
 	 */
-	private void doShutdownCall(){
+	public void doShutdownCall(){
 		
 		LogView.append("[알림] RootStage Shutdown Call 이 실행되었습니다. (" + getX() + ", " + getY() + ")");
 		
@@ -230,6 +243,8 @@ public class RootStage extends Stage{
 		if(showMenuBar)
 			Regedit.setRegistry(RegistyNameData.ROOT_VIEW_WIDTH, getWidth()-400);
 		
+		close();
+		
 		client.clearTransmit();
 		client.initLoginStage();
 		
@@ -245,7 +260,7 @@ public class RootStage extends Stage{
 			menuPane = (BorderPane) loader.load();
 			
 			menuController = loader.getController();
-			menuController.setClient(client);
+			menuController.setClient(client, this);
 			
 			
 			
@@ -253,6 +268,54 @@ public class RootStage extends Stage{
 			
 		}
 		
+	}
+	
+	/**
+	 * 어드민 여부를 설정한다.
+	 * @param set
+	 */
+	public void setAdmin(boolean set){
+		admin = set;
+	}
+	
+	/**
+	 * 어드민 여부를 반환한다.
+	 * @return
+	 */
+	public boolean isAdmin(){
+		return admin;
+	}
+	
+	/**
+	 * 알람 옵션을 설정한다.
+	 * @param set
+	 */
+	public void setAlarm(boolean set){
+		alarm = set;
+	}
+	
+	/**
+	 * 알람 설정을 반환한다.
+	 * @return
+	 */
+	public boolean isAlarm(){
+		return alarm;
+	}
+	
+	/**
+	 * 채팅 항상 내림 기능을 설정한다
+	 * @param set
+	 */
+	public void setAlwaysChatDown(boolean set){
+		chatAlwaysDown = set;
+	}
+	
+	/**
+	 * 채팅 항상 내림 기능 설정을 반환한다.
+	 * @return
+	 */
+	public boolean isAlwaysChatDown(){
+		return chatAlwaysDown;
 	}
 	
 	/**

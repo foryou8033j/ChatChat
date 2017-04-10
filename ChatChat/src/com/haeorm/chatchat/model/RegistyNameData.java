@@ -16,4 +16,10 @@ public class RegistyNameData {
 	public static String ROOT_VIEW_WIDTH = "RootViewWidth";
 	public static String ROOT_VIEW_HEIGHT = "RootViewHeight";
 	
+	public static String ROOT_VIEW_ALWAY_ON_TOP = "RootViewAlwaysOnTop";
+	public static String ROOT_VIEW_CHAT_ALWAYS_DOWN = "ChatViewAlwaysDown";
+	public static String NOITIFY_ALARM = "NotifyAlarm";
+	
+	public static String DEFAULT_NAME = "DefaultName";
+	
 }

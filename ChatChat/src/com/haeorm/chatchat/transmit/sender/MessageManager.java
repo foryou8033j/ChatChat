@@ -2,6 +2,7 @@ package com.haeorm.chatchat.transmit.sender;
 
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.Data;
+import com.haeorm.chatchat.util.notification.DesktopNotify;
 
 public class MessageManager {
 
@@ -58,7 +59,7 @@ public class MessageManager {
 	
 	//채팅방 접속 종료 플래그
 	public void sendQuitPlag(){
-		send("4444", client.getData().getName());
+		send("444", client.getData().getName());
 	}
 	
 	//서버에 사용자 리스트 목록을 요청하는 플래그
@@ -71,6 +72,39 @@ public class MessageManager {
 		send("500", client.getData().getName() + Data.Key + name);
 	}
 	
+	//귓속말 전송
+	public void sendWisper(String name, String message){
+		send("700", client.getData().getName() + Data.Key + name + Data.Key + message);
+	}
+	
+	public void sendRequestAdmin(String password){
+		send("60", password);
+	}
+	
+	public void kickUser(String name, String message){
+		send("63", name + Data.Key + message);
+		DesktopNotify.showDesktopMessage("서버에 추방 요청 전송 완료", "서버에 " + name + " 유저에 대한 추방 요청을 전송하였습니다\n" + message, DesktopNotify.TIP, 4000);
+	}
+	
+	public void kickAllUser(String message){
+		send("64", message);
+		DesktopNotify.showDesktopMessage("서버에 전체 추방 요청 전송 완료", "서버에 전체 유저에 대한 추방 요청을 전송하였습니다\n" + message, DesktopNotify.TIP, 4000);
+	}
+	
+	public void clearChatUser(String name){
+		send("65", name);
+		DesktopNotify.showDesktopMessage("서버에 메세지 삭제 요청 전송 완료", "서버에 " + name + " 유저에 대한 메세지 삭제 요청을 전송하였습니다\n", DesktopNotify.TIP, 4000);
+	}
+	
+	public void clearChatAllUser(){
+		send ("66");
+		DesktopNotify.showDesktopMessage("서버에 전체 메세지 삭제 요청 전송 완료", "서버에 전체 유저에 대한 메세지 삭제 요청을 전송하였습니다\n", DesktopNotify.TIP, 4000);
+	}
+	
+	public void sendNotice(String message){
+		send ("67", message);
+		DesktopNotify.showDesktopMessage("서버에 공지사항 전파 요청 완료", "서버에 공지사항 전파 요청을 전송하였습니다\n" + message, DesktopNotify.TIP, 4000);
+	}
 	
 	
 	

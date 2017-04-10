@@ -122,6 +122,8 @@ public class LoginStage extends Stage{
 		LogView.append("[알림] LoginStage Shutdown Call 이 실행되었습니다. (" + getX() + ", " + getY() + ")");
 		Regedit.setRegistry(RegistyNameData.LOGIN_VIEW_X, getX());
 		Regedit.setRegistry(RegistyNameData.LOGIN_VIEW_Y, getY());
+		
+		System.exit(0);
 	}
 	
 	public LoginLayoutController getController(){

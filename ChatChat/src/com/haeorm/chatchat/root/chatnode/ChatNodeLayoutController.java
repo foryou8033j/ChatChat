@@ -51,7 +51,6 @@ public class ChatNodeLayoutController implements Initializable{
 		
 		sender.setText(name);
 		contents.setText(message);
-		
 	}
 	
 	public void setSenderType(SENDER senderType){
@@ -88,6 +87,14 @@ public class ChatNodeLayoutController implements Initializable{
 		if(senderSame){
 			borderPane.setTop(null);
 		}
+	}
+	
+	/**
+	 * 귓속말 메세지로 지정한다.
+	 */
+	public void setWisper(){
+		contents.setFill(Color.GREEN);
+		contents.setFont(Font.font("Malgun Gothic", FontWeight.BOLD, 12));
 	}
 	
 	

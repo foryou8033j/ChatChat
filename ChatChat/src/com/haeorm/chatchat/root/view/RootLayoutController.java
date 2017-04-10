@@ -8,19 +8,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.haeorm.chatchat.Client;
+import com.haeorm.chatchat.model.UserList;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -38,6 +45,9 @@ public class RootLayoutController implements Initializable{
 
 	public enum NOTICE_STYLE{ERROR, INFORMATION};
 	
+	final static public String DEFAULT_RECEIVER = "All";
+	final static public String NOTICE_RECEIVER = "Notice";
+	
 	@FXML BorderPane rootPane;
 	
 	ObservableList<BorderPane> chatList = FXCollections.observableArrayList();
@@ -47,12 +57,79 @@ public class RootLayoutController implements Initializable{
 	@FXML Button sendMessageButton;
 	@FXML Button clearChatListButton;
 	
+	@FXML Text receiver;
+	BooleanProperty receiverTypemode = new SimpleBooleanProperty(false);
+	
 	private @FXML Button menuButton;
 
 	private Client client;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		chatInputBox.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				
+				if(newValue.startsWith("##")){
+					chatInputBox.setStyle("-fx-text-fill: green;");
+					receiverTypemode.set(true);
+				}
+				else{
+					chatInputBox.setStyle("-fx-text-fill: black;");
+					receiverTypemode.set(false);
+				}
+					
+			}
+		});
+		
+		receiverTypemode.addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if(newValue.booleanValue())
+				{
+					
+				}else{
+					
+				}
+			}
+		});
+		
+		receiver.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(newValue.equals(DEFAULT_RECEIVER))
+				{
+					receiver.setFill(Color.PURPLE);
+				}else if(newValue.equals(NOTICE_RECEIVER)){
+					receiver.setFill(Color.RED);
+				}else{
+					receiver.setFill(Color.GREEN);
+				}
+			}
+		});
+		
+		//TODO TAB키 누를때 이름 미리뜨는 기능 추가 필요
+		/*chatInputBox.setOnKeyTyped(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode().equals(KeyCode.SHIFT)){
+					if(receiverTypemode.get()){
+						String currentTyped = chatInputBox.getText().replaceAll("##", "");
+						
+						for(UserList user:client.getRootStage().getMenuLayoutController().getUserList()){
+							if(user.getName().startsWith(currentTyped))
+							{
+								chatInputBox.setText("##"+user.getName());
+								return;
+							}
+						}
+						
+						chatInputBox.setText("");
+					}
+				}
+			}
+		});*/
+		
 		
 	}
 	
@@ -62,7 +139,52 @@ public class RootLayoutController implements Initializable{
 	
 	@FXML
 	private void handleSendMessage(){
-		client.getManager().sendNomalText(chatInputBox.getText());
+		
+		if(chatInputBox.getText().equals("") || chatInputBox.getText() == null){
+			resetReceiver();
+			return;
+		}
+		
+		if(receiver.getText().equals(NOTICE_RECEIVER)){
+			if(chatInputBox.getText().equals("")){
+				resetReceiver();
+				return;
+			}else{
+				client.getManager().sendNotice(chatInputBox.getText());
+				resetReceiver();
+				chatInputBox.setText("");
+				return;
+			}
+		}
+		
+		
+		if(receiverTypemode.get()){
+
+			String name = chatInputBox.getText().substring(2);
+			
+			System.out.println(name);
+			
+			for(UserList user:client.getRootStage().getMenuLayoutController().getUserList()){
+				if(user.getName().equals(name) && !name.equals(client.getData().getName())){
+					receiver.setText(name);
+					chatInputBox.setText("");
+					return;
+				}
+				else{
+					resetReceiver();
+				}
+			}
+			
+		}else{
+			
+			if(!receiver.getText().equals(DEFAULT_RECEIVER))
+				client.getManager().sendWisper(receiver.getText(), chatInputBox.getText());
+			else
+				client.getManager().sendNomalText(chatInputBox.getText());
+			
+			chatInputBox.setText("");
+		}
+		
 		chatInputBox.setText("");
 	}
 	
@@ -83,23 +205,26 @@ public class RootLayoutController implements Initializable{
 	public void setClient(Client client){
 		this.client = client;
 		
+		receiver.setText(DEFAULT_RECEIVER);
+		
 		chatInputBox.setOnKeyPressed(event -> {
 			if(event.getCode().equals(KeyCode.ENTER))
 				handleSendMessage();
 			else if(event.getCode().equals(KeyCode.ESCAPE))
 				chatInputBox.setText("");
 		});
+		
 		chatListView.setItems(chatList);
 		
 		chatListView.getItems().addListener(new ListChangeListener<BorderPane>() {
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends BorderPane> c) {
 
-				chatListView.scrollTo(c.getList().size() - 1);
+				if(client.getRootStage().isAlwaysChatDown())
+					chatListView.scrollTo(c.getList().size() - 1);
 				
 			}
 		});
-		
 	}
 	
 	public void appendMessage(String name, String message){
@@ -110,6 +235,12 @@ public class RootLayoutController implements Initializable{
 		});
 		
 		
+	}
+	
+	public void appendWisperMessage(String name, String message){
+		Platform.runLater(() -> {
+			chatList.add(new ChatNode(client, NODE_STYLE.WISPPER, name, message).getChatNode());
+		});
 	}
 	
 	
@@ -127,6 +258,29 @@ public class RootLayoutController implements Initializable{
 	 */
 	public ObservableList<BorderPane> getChatList(){
 		return chatList;
+	}
+	
+	/**
+	 * 귓속말 수신자를 지정한다.
+	 * @param name
+	 */
+	public void setWisperReceiver(String name){
+		receiver.setText(name);
+	}
+	
+	/**
+	 * 귓속말 수신자를 초기화한다. 
+	 */
+	public void resetReceiver(){
+		receiver.setText(DEFAULT_RECEIVER);
+	}
+	
+	/**
+	 * 귓속말 대상자를 반환한다.
+	 * @return
+	 */
+	public String getWisperReceiver(){
+		return receiver.getText();
 	}
 	
 	/**
@@ -204,6 +358,12 @@ public class RootLayoutController implements Initializable{
         }, 0, 1);
 	}
 	
+	/**
+	 * 알림 팝업을 보여준다.
+	 * @param style
+	 * @param message
+	 * @param time
+	 */
 	public void showNoticePopup(NOTICE_STYLE style, String message, int time){
 		
 		Platform.runLater(() -> {
@@ -212,7 +372,7 @@ public class RootLayoutController implements Initializable{
 		
 		BorderPane pane = new BorderPane();
 		Text text = new Text(message);
-		text.setFont(Font.font("Malgun Gothic", FontWeight.EXTRA_BOLD, 12));
+		text.setFont(Font.font("Malgun Gothic", FontWeight.EXTRA_BOLD, 14));
 		
 		pane.setCenter(text);
 		
@@ -229,7 +389,7 @@ public class RootLayoutController implements Initializable{
 			pane.setStyle(""
 				+ "-fx-background-color : rgb(78, 156, 181);"
 			);
-			text.setFill(Color.BLACK);
+			text.setFill(Color.WHITE);
 			
 		}else{
 			
