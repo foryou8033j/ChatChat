@@ -2,11 +2,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="100.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.loading.LoadLayoutController">
+<BorderPane cache="true" prefHeight="100.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.loading.LoadLayoutController">
    <center>
       <ProgressIndicator fx:id="progress" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -17,11 +18,14 @@
    <top>
       <Text fx:id="text" strokeType="OUTSIDE" strokeWidth="0.0" text="자료를 불러오는 중" BorderPane.alignment="CENTER">
          <font>
-            <Font size="16.0" />
+            <Font name="Malgun Gothic Bold" size="16.0" />
          </font>
          <BorderPane.margin>
             <Insets bottom="10.0" top="10.0" />
          </BorderPane.margin>
       </Text>
    </top>
+   <effect>
+      <DropShadow height="50.65" radius="18.895" spread="0.15" width="26.93" />
+   </effect>
 </BorderPane>
