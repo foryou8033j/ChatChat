@@ -1,14 +1,18 @@
 package com.haeorm.chatchat.root.menu.namechange;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+
 import com.haeorm.chatchat.Client;
-import com.haeorm.chatchat.util.Regedit;
+import com.haeorm.chatchat.util.logview.LogView;
+import com.haeorm.chatchat.util.notification.DesktopNotify;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -16,32 +20,25 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class NameChangeDialog extends Stage{
+public class PasswordInputDialog extends Stage{
 
 	VBox vb = new VBox(10);
 	
 	
-	TextField input = new TextField();
-	Text title = new Text("변경 할 이름을 입력하세요.");
+	PasswordField password = new PasswordField();
+	Text title = new Text("패스워드를 입력하세요.");
 	Text text = new Text("");
 	
-	int maxLength = 13;
-	
-	private Client client = null;
-	
-	boolean pass = true;
-	
-	public NameChangeDialog(Client client) {
-		super();
+	private int maxLength = 13;
+
+	public PasswordInputDialog(Client client) {
 		
-		this.client = client;
 		getIcons().add(client.icon);
 		
 		vb.getChildren().add(title);
-		vb.getChildren().add(input);
+		vb.getChildren().add(password);
 		vb.getChildren().add(text);
 		
 		vb.setAlignment(Pos.CENTER);
@@ -51,14 +48,8 @@ public class NameChangeDialog extends Stage{
 		
 		text.setTextAlignment(TextAlignment.CENTER);
 		
-		setTitle("이름 변경");
+		setTitle("관리자 권한 획득");
 		initOwner(client.getRootStage());
-		initModality(Modality.WINDOW_MODAL);
-		
-		
-		
-		
-		input.setText(Regedit.getStringValue("title"));
 		
 		setWidth(240);
 		setHeight(120);
@@ -70,49 +61,52 @@ public class NameChangeDialog extends Stage{
         setX(centerXPosition - getWidth()/2d);
         setY(centerYPosition - getHeight()/2d);
 		
+		
 		Scene scene = new Scene(vb);
 		setScene(scene);
-		
-		setOnCloseRequest(Event -> {
-			close();
-		});
-		
-		
-		input.textProperty().addListener(new ChangeListener<String>() {
+			
+		password.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> obersvable, String oldValue, String newValue) {
-				if(client.getData().getBlockNameList().contains(newValue.toLowerCase())){
+				
+				if(newValue.length() > maxLength){
+					String s = newValue.substring(0, maxLength);
+					password.setText(s);
+					return;
+				}
+				
+				if(newValue.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")){
 					text.setFill(Color.RED);
-					text.setText("사용 할 수 없는 이름입니다.");
-					pass = false;
+					text.setText("한글이 입력되고 있습니다.");
 				}else{
 					text.setText("");
-					pass = true;
 				}
+				
 			}
 		});
 		
-		input.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		password.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent arg0) {
 				
 				if(arg0.getCode() == KeyCode.ENTER){
-					if(input.getText().equals("")){
-						text.setFill(Color.RED);
-						text.setText("변경할 이름을 입력하세요.");
+					
+					if(password.getText().equals("")){
+						close();
+						return;
 					}else{
-						
-						if(!input.getText().equals("") && pass){
-							client.getManager().sendRequestChangeName(input.getText());
-							close();
-						}else{
-							input.setText("");
-						}
-							
-						
-						
+						LogView.append("서버에 관리자 권한 획득 시도");
+						new Thread(() -> {
+							DesktopNotify.showDesktopMessage("서버에 요청 전송 완료", "서버에 관리자 권한 요청을 시도하였습니다.", DesktopNotify.TIP, 4000);
+							try {
+								new Robot().delay(2500);
+							} catch (AWTException e) {
+								// TODO Auto-generated catch block
+								//e.printStackTrace();
+							}
+							client.getManager().sendRequestAdmin(password.getText());
+						}).start();
+						close();
 					}
-					
-					
 				}
 				
 			};
