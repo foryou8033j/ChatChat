@@ -20,32 +20,32 @@ import javafx.collections.ObservableList;
 public class Server {
 
 	public static double version = 0.1;
-	
-	
-	
+
+
+
 	ObservableList<ServerData> serverDatas = FXCollections.observableArrayList();
-	
-	
+
+
 	public Server() throws UnknownHostException {
-		
+
 		LogView.append("### 채팅 서버 동작 시작 ###");
-		
-		serverDatas.addAll(new ServerData("메인 채널", Inet4Address.getLocalHost().getHostAddress(), 8080 ,"test", "admin"),
+
+		serverDatas.addAll(new ServerData("메인 채널", Inet4Address.getLocalHost().getHostAddress(), 8887 ,"test", "admin"),
 				new ServerData("테스트 채널", Inet4Address.getLocalHost().getHostAddress(), 8888, "test", "admin"));
-		
+
 		for(ServerData server:serverDatas)
 			server.run();
 
 	}
-	
-	
-	
+
+
+
 	public static void main(String[] args) throws UnknownHostException {
-		
+
 		new Server();
-		
+
 	}
-	
-	
-	
+
+
+
 }
