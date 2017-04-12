@@ -19,13 +19,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert.AlertType;
 
 public class ConnectionKeeper extends Thread {
-	
+
 	Client client = null;
 	public IntegerProperty dumpPing = new SimpleIntegerProperty();
-	
+
 	public ConnectionKeeper(Client client) {
 		this.client = client;
-		
+
 		dumpPing.addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -39,40 +39,40 @@ public class ConnectionKeeper extends Thread {
 				}
 				else{
 					client.getRootStage().getRootLayoutController().setConnectionStatus(CONNECTION_STATUS.BAD);
-					
+
 					Platform.runLater(() -> {
 						//client.tryReConnectServer();
 					});
-					
+
 				}
-					
-				
+
+
 			}
 		});
-		
+
 	}
 
 	@Override
 	public void run() {
-		
+
 		while(!currentThread().isInterrupted()){
-			
+
 			dumpPing.set(dumpPing.get()+1);
 			client.getManager().sendConnectionCheckPing();
-			
+
 			if(dumpPing.get() > 5)
 				client.tryReConnectServer();
-			
+
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				
+
 			}
-			
+
 		}
-		
+
 		super.run();
 	}
 
-	
+
 }
