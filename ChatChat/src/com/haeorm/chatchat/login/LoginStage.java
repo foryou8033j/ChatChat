@@ -1,7 +1,6 @@
 package com.haeorm.chatchat.login;
 
 import com.haeorm.chatchat.Client;
-import com.haeorm.chatchat.login.view.LoginLayoutController;
 import com.haeorm.chatchat.model.RegistyNameData;
 import com.haeorm.chatchat.util.ExceptionDialog;
 import com.haeorm.chatchat.util.Regedit;
@@ -24,7 +23,7 @@ import javafx.stage.Stage;
  */
 public class LoginStage extends Stage{
 
-	private LoginLayoutController controller;
+	private LoginLayoutController controller = null;
 
 	public LoginStage(Client client) {
 
@@ -40,7 +39,7 @@ public class LoginStage extends Stage{
 
 
 		try{
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("./view/LoginLayout.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginLayout.fxml"));
 			AnchorPane pane = (AnchorPane) loader.load();
 
 			controller = loader.getController();

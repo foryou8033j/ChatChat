@@ -1,4 +1,4 @@
-package com.haeorm.chatchat.root.view;
+package com.haeorm.chatchat.root;
 
 import java.awt.AWTException;
 import java.awt.Robot;

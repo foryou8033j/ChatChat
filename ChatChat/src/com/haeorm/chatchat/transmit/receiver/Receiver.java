@@ -8,10 +8,10 @@ import java.util.StringTokenizer;
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.Data;
 import com.haeorm.chatchat.model.UserList;
+import com.haeorm.chatchat.root.RootLayoutController;
+import com.haeorm.chatchat.root.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.root.chatnode.ChatNode;
 import com.haeorm.chatchat.root.chatnode.ChatNode.NODE_STYLE;
-import com.haeorm.chatchat.root.view.RootLayoutController;
-import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.util.logview.LogView;
 import com.haeorm.chatchat.util.notification.DesktopNotify;
 
@@ -28,30 +28,30 @@ import javafx.scene.control.Alert.AlertType;
  *
  */
 public class Receiver extends Thread {
-	
-	
+
+
 	BufferedReader in = null;
-	
+
 	Client client;
-	
+
 	public Receiver(Client client, Socket socket) {
-		
+
 		this.client = client;
-		
+
 		try{
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 		}catch (Exception e){
-			
+
 		}
-		
+
 	}
-	
+
 	@Override
 	public void run() {
 		super.run();
-		
+
 		String message = "";
-		
+
 		try
 		{
 			//메세지를 지속적으로 수신한다.
@@ -59,12 +59,12 @@ public class Receiver extends Thread {
 			{
 				while((message = in.readLine() ) != null)
 				{
-					
+
 					LogView.append("[수신] " + message);
 					manager(message);
 				}
 			}
-			
+
 		}catch (Exception e)
 		{
 			//e.printStackTrace();
@@ -72,36 +72,34 @@ public class Receiver extends Thread {
 		{
 			//removeUser(name);
 		}
-		
+
 	}
-	
+
 	/**
 	 * 메세지를 수신했을때 plag 에 맞는 클라이언트의 동작을 수행한다.
 	 * @param message
 	 */
 	public void manager(String message){
-		
-		client.down.set(client.down.get()+1);
-		
+
 		StringTokenizer token = new StringTokenizer(message, Data.Key);
-		
+
 		int plag = Integer.valueOf(token.nextToken());
 		String hashKey = "";
 		if(token.hasMoreTokens())
 			 hashKey = token.nextToken();
-		
+
 		//현재 클라이언트만 해당되어야 하는 명령
 		if(client.getData().getHashKey() == Double.valueOf(hashKey)){
-			
+			client.down.set(client.down.get()+1);
 			switch (plag) {
 			case 0:
 				client.getManager().sendRequestUserListFromServer();
 				break;
-			
+
 			case 800:	//사용자 확인 명령 수행
 				refreshUserList(token.nextToken());
 				break;
-			
+
 			case 101: //패스워드 승인
 				client.getData().serverPasswordPass = true;
 				client.getSender().getManager().sendVersionCheckPlag();
@@ -115,7 +113,7 @@ public class Receiver extends Thread {
 				alert.showAndWait();
 				client.getData().serverPasswordPass = false;
 				break;
-			
+
 			case 111: //버전 승인
 				client.getData().versionCheckPass = true;
 				break;
@@ -125,7 +123,7 @@ public class Receiver extends Thread {
 			case 113: //버전 승인 실패
 				client.getData().versionCheckPass = false;
 				break;
-			
+
 			case 61:	//관리자 권한 획득
 				client.getRootStage().setAdmin(true);
 				client.getManager().sendChangedStatus("Admin");
@@ -141,25 +139,25 @@ public class Receiver extends Thread {
 				client.getRootStage().showNoticePopup(NOTICE_STYLE.ERROR, "관리자 권한 획득에 실패하였습니다.", 4000);
 				DesktopNotify.showDesktopMessage("권한 획득 실패", "서버가 관리자 권한 획득을 거부하였습니다.", DesktopNotify.ERROR, 4000);
 				break;
-				
+
 			case 67:	//공지사항 전파
 				String noticeMessage = token.nextToken();
 				receiveNotice(noticeMessage);
 				receiveNoticePopup(noticeMessage);
 				DesktopNotify.showDesktopMessage("공지사항", noticeMessage, DesktopNotify.INFORMATION, 4000);
 				break;
-			
+
 			case 121: //닉네임 승인
 				client.getData().nameOverLabPass = true;
 				break;
 			case 122: //닉네임 승인 실패
 				client.getData().nameOverLabPass = false;
 				break;
-			
+
 			case 198:
 				client.getRootStage().getConnectionKeeper().dumpPing.set(client.getRootStage().getConnectionKeeper().dumpPing.get()-1);
 				break;
-			
+
 			case 501:	//닉네임 변경 승인
 				client.getData().setName(token.nextToken());
 				client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "닉네임 변경에 성공하였습니다.", 4000);
@@ -167,15 +165,15 @@ public class Receiver extends Thread {
 			case 502:	//닉네임 변경 실패
 				client.getRootStage().showNoticePopup(NOTICE_STYLE.ERROR, "닉네임 변경에 실패하였습니다.", 4000);
 				break;
-				
+
 			case 700:	//귓속말 수신
 				receiveWisper(token.nextToken(),token.nextToken(), token.nextToken());
 				break;
-			
+
 			case 999:	//일반 메세지
 				receivedNomalText(token.nextToken(), token.nextToken());
 				break;
-				
+
 			case 1000:	//일반 공지
 				receiveNotice(token.nextToken());
 				break;
@@ -183,13 +181,13 @@ public class Receiver extends Thread {
 				receiveNoticePopup(token.nextToken());
 				break;
 			}
-			
+
 		}else{	//전체 클라이언트에 해당되는 명령
 			switch(plag){
 			case 0:
 				client.getManager().sendRequestUserListFromServer();
 				break;
-				
+
 			case 63:	//특정 사용자 추방
 				if(client.getData().getName().equals(token.nextToken())){
 					Platform.runLater(() -> {
@@ -200,7 +198,7 @@ public class Receiver extends Thread {
 						alert.setHeaderText("관리자에 의해 추방되었습니다.");
 						alert.setContentText("사유 : " + token.nextToken());
 						alert.showAndWait();
-						
+
 						client.getRootStage().doShutdownCall();
 					});
 				}
@@ -214,7 +212,7 @@ public class Receiver extends Thread {
 					alert.setHeaderText("관리자에 의해 추방되었습니다.");
 					alert.setContentText("사유 : " + token.nextToken());
 					alert.showAndWait();
-					
+
 					client.getRootStage().doShutdownCall();
 				});
 				break;
@@ -225,34 +223,34 @@ public class Receiver extends Thread {
 						client.getRootStage().getRootLayoutController().handleClearChatList();
 					});
 				}
-					
+
 				break;
 			case 66:	//전체 사용자 채팅 삭제
 				Platform.runLater(() -> {
 					client.getRootStage().showNoticePopup(NOTICE_STYLE.INFORMATION, "관리자 명령으로 채팅내용을 지웠습니다.", 5000);
-					client.getRootStage().getRootLayoutController().handleClearChatList();	
+					client.getRootStage().getRootLayoutController().handleClearChatList();
 				});
 				break;
-				
+
 			case 67:	//공지사항 전파
 				String noticeMessage = token.nextToken();
 				receiveNotice(noticeMessage);
 				receiveNoticePopup(noticeMessage);
 				DesktopNotify.showDesktopMessage("공지사항", noticeMessage, DesktopNotify.INFORMATION, 4000);
 				break;
-				
+
 			case 800:	//사용자 확인 명령 수행
 				refreshUserList(token.nextToken());
 				break;
-				
+
 			case 700:	//귓속말 수신
 				receiveWisper(token.nextToken(),token.nextToken(), token.nextToken());
 				break;
-			
+
 			case 999:	//일반 메세지
 				receivedNomalText(token.nextToken(), token.nextToken());
 				break;
-				
+
 			case 1000:	//일반 공지
 				receiveNotice(token.nextToken());
 				break;
@@ -262,12 +260,12 @@ public class Receiver extends Thread {
 			}
 		}
 	}
-	
+
 	private void refreshUserList(String listCode){
 		client.getRootStage().getMenuLayoutController().getUserList().clear();
-		
+
 		StringTokenizer token = new StringTokenizer(listCode, "##");
-		
+
 		while(token.hasMoreTokens()){
 			StringTokenizer userSet = new StringTokenizer(token.nextToken(), "$$");
 			String name = userSet.nextToken();
@@ -281,7 +279,7 @@ public class Receiver extends Thread {
 		Platform.runLater(() -> {
 			client.getRootStage().appendMessage(name, message);
 		});
-		
+
 		if(message.equals("@"+client.getData().getName()) && !isMe(name))
 			DesktopNotify.showDesktopMessage("툭!", name + "님이 당신을 찾습니다!", DesktopNotify.TIP, 6000);
 		else{
@@ -289,7 +287,7 @@ public class Receiver extends Thread {
 				DesktopNotify.showDesktopMessage(name, message, DesktopNotify.INFORMATION, 2000);
 		}
 	}
-	
+
 	//귓속말 수신
 	private void receiveWisper(String name, String receiver, String message){
 		if(name.equals(client.getData().getName()) || receiver.equals(client.getData().getName())){
@@ -297,21 +295,21 @@ public class Receiver extends Thread {
 				client.getRootStage().getRootLayoutController().appendWisperMessage(name, message);
 			});
 		}
-		
+
 		if(client.getRootStage().isAlarm() && !isMe(name))
 			DesktopNotify.showDesktopMessage(name + "의 귓속말", message, DesktopNotify.INFORMATION, 2500);
-		
+
 	}
-	
+
 	//대화 공지사항 수신
 	private void receiveNotice(String message){
 		Platform.runLater(() -> {
 			client.getRootStage().getRootLayoutController().getChatList().add(new ChatNode(client, NODE_STYLE.NOTICE, "", message).getChatNode());
 			client.getRootStage().recentlySender = "";
 		});
-		
+
 	}
-	
+
 	//알림 공지사항 수신
 	private void receiveNoticePopup(String message){
 		Platform.runLater(() -> {
@@ -319,13 +317,13 @@ public class Receiver extends Thread {
 			client.getRootStage().recentlySender = "";
 		});
 	}
-	
+
 	private boolean isMe(String name){
 		if(name.equals(client.getData().getName()))
 			return true;
 		else
 			return false;
 	}
-	
-	
+
+
 }

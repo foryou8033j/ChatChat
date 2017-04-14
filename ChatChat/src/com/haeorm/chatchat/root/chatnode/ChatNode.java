@@ -35,7 +35,7 @@ public class ChatNode{
 		this.message = message;
 
 		try{
-			FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("com/haeorm/chatchat/root/chatnode/ChatNodeLayout.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatNodeLayout.fxml"));
 			borderPane = (BorderPane) loader.load();
 
 			//대화 노드의 기본 스타일을 지정한다.

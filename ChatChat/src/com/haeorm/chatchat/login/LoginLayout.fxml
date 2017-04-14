@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.login.view.LoginLayoutController">
+<AnchorPane prefHeight="400.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.haeorm.chatchat.login.LoginLayoutController">
    <children>
       <Text layoutX="35.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ChatChat" textAlignment="CENTER" AnchorPane.bottomAnchor="280.7099609375" AnchorPane.topAnchor="64.9345703125">
          <font>

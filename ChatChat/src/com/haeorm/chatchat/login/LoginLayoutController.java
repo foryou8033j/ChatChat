@@ -1,4 +1,4 @@
-package com.haeorm.chatchat.login.view;
+package com.haeorm.chatchat.login;
 
 import java.net.URL;
 import java.util.Random;

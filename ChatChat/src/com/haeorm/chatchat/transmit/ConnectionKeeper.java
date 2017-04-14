@@ -5,7 +5,7 @@ import java.awt.Robot;
 import java.net.Socket;
 
 import com.haeorm.chatchat.Client;
-import com.haeorm.chatchat.root.view.RootLayoutController.CONNECTION_STATUS;
+import com.haeorm.chatchat.root.RootLayoutController.CONNECTION_STATUS;
 import com.haeorm.chatchat.transmit.receiver.Receiver;
 import com.haeorm.chatchat.transmit.sender.Sender;
 import com.haeorm.chatchat.util.ExceptionDialog;

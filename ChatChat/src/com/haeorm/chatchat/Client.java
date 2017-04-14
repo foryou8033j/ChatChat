@@ -86,11 +86,6 @@ public class Client extends Application {
 	public void initLoginStage(){
 
 		loginStage = new LoginStage(this);
-
-
-
-
-		//loginStage.show();
 	}
 
 	/**

@@ -4,9 +4,8 @@ import java.util.Random;
 
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.RegistyNameData;
+import com.haeorm.chatchat.root.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.root.menu.MenuLayoutController;
-import com.haeorm.chatchat.root.view.RootLayoutController;
-import com.haeorm.chatchat.root.view.RootLayoutController.NOTICE_STYLE;
 import com.haeorm.chatchat.transmit.ConnectionKeeper;
 import com.haeorm.chatchat.util.ExceptionDialog;
 import com.haeorm.chatchat.util.Regedit;
@@ -58,7 +57,7 @@ public class RootStage extends Stage{
 		});
 
 		try{
-			FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("com/haeorm/chatchat/root/view/RootLayout.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("RootLayout.fxml"));
 			BorderPane pane = (BorderPane) loader.load();
 
 			controller = loader.getController();

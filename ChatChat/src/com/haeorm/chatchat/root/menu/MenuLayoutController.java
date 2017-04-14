@@ -6,10 +6,10 @@ import java.util.ResourceBundle;
 import com.haeorm.chatchat.Client;
 import com.haeorm.chatchat.model.RegistyNameData;
 import com.haeorm.chatchat.model.UserList;
+import com.haeorm.chatchat.root.RootLayoutController;
 import com.haeorm.chatchat.root.RootStage;
 import com.haeorm.chatchat.root.menu.namechange.NameChangeDialog;
 import com.haeorm.chatchat.root.menu.namechange.PasswordInputDialog;
-import com.haeorm.chatchat.root.view.RootLayoutController;
 import com.haeorm.chatchat.util.Regedit;
 import com.haeorm.chatchat.util.notification.DesktopNotify;
 
